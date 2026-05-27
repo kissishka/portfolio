@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "../../components/Hero.astro";
+import Services from "../../components/Services.astro";
+import Portfolio from "../../components/Portfolio.astro";
+import Contact from "../../components/Contact.astro";
+import LangSwitcher from "../../components/LangSwitcher.astro";
+import { t } from "../../lib/t";
+import { TELEGRAM_HANDLE, EMAIL } from "../../lib/contact";
+
+const locale = "en" as const;
+const title = "Engineer · Problem solver — websites, bots, deploys";
+const description = t("hero.subhead", locale);
+---
+
+<BaseLayout locale={locale} title={title} description={description}>
+  <header class="site-header">
+    <a class="brand" href="/en/">Engineer</a>
+    <LangSwitcher currentLocale={locale} />
+  </header>
+  <main>
+    <Hero locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />
+    <Services locale={locale} />
+    <Portfolio locale={locale} />
+    <Contact locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />
+  </main>
+  <footer class="site-footer">
+    <p>{t("footer.copyright", locale)}</p>
+  </footer>
+</BaseLayout>

@@ -1,0 +1,92 @@
+---
+import { PERSON_JSONLD } from "../lib/jsonld";
+import type { Locale } from "../lib/t";
+import "../styles/global.css";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Path under /en/ or /uk/ excluding the locale prefix, e.g. "" or "about/". */
+  pathSuffix?: string;
+  ogImage?: string;
+}
+
+const { locale, title, description, pathSuffix = "", ogImage } = Astro.props;
+
+const htmlLang = locale === "uk" ? "uk-UA" : "en";
+
+const siteOrigin = Astro.site
+  ? Astro.site.origin
+  : "https://portfolio.example.com";
+
+const canonicalPath = `/${locale}/${pathSuffix}`;
+const canonicalUrl = `${siteOrigin}${canonicalPath}`;
+
+// hreflang alternates — every locale plus x-default mapped to en.
+const localeAlternates: Array<{ hreflang: string; href: string }> = [
+  { hreflang: "en", href: `${siteOrigin}/en/${pathSuffix}` },
+  { hreflang: "uk", href: `${siteOrigin}/uk/${pathSuffix}` },
+  { hreflang: "x-default", href: `${siteOrigin}/en/${pathSuffix}` },
+];
+
+// Per-locale font subset. Latin (en) and Cyrillic-Ukrainian (uk) subsets are
+// shipped from public/fonts/. Preload only the primary subset for the active
+// locale; the @font-face declarations in global.css carry unicode-range so the
+// browser will additionally fetch the other subset only if a glyph requires it.
+// Loaded with `font-display: optional` to avoid CLS (AC16).
+const fontHref =
+  locale === "uk" ? "/fonts/inter-cyr-uk.woff2" : "/fonts/inter-latin.woff2";
+
+const ogLocale = locale === "uk" ? "uk_UA" : "en_US";
+const ogImageUrl = ogImage ?? `${siteOrigin}/og-default.png`;
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0d10" />
+    <meta name="color-scheme" content="light dark" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {
+      localeAlternates.map((alt) => (
+        <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+      ))
+    }
+
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={fontHref}
+      crossorigin
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script type="application/ld+json" set:html={PERSON_JSONLD} is:inline />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

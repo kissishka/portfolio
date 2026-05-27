@@ -1,0 +1,22 @@
+{
+  "nav.home": "Home",
+  "nav.services": "Services",
+  "nav.portfolio": "Portfolio",
+  "nav.contact": "Contact",
+  "hero.kicker": "Engineer · Problem solver",
+  "hero.headline": "I build websites, bots, and deploys that work the first time.",
+  "hero.subhead": "Productized services for founders and small teams that need real engineering, not a template.",
+  "hero.cta.primary": "Message me on Telegram",
+  "hero.cta.secondary": "Or email me",
+  "services.heading": "Services",
+  "services.intro": "Three things, done well.",
+  "services.startingPrice": "Starting at",
+  "portfolio.heading": "Selected work",
+  "portfolio.stubBadge": "Coming soon",
+  "contact.heading": "Get in touch",
+  "contact.body": "Telegram is the fastest way to reach me. Email works too.",
+  "contact.cta.telegram": "Open Telegram",
+  "contact.cta.email": "Copy email",
+  "footer.copyright": "© 2026 Roman Kocherezhchenko · Built with Astro, hosted on Cloudflare Pages.",
+  "lang.switch": "Українська"
+}

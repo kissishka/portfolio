@@ -1,0 +1,29 @@
+---
+import type { Locale } from "../lib/t";
+import { t } from "../lib/t";
+
+interface Props {
+  locale: Locale;
+  telegramHandle: string;
+  email: string;
+}
+
+const { locale, telegramHandle, email } = Astro.props;
+---
+
+<section class="contact" aria-labelledby="contact-heading">
+  <h2 id="contact-heading">{t("contact.heading", locale)}</h2>
+  <p>{t("contact.body", locale)}</p>
+  <div class="cta-row">
+    <a
+      class="btn btn--primary"
+      href={`https://t.me/${telegramHandle}`}
+      rel="noopener"
+    >
+      {t("contact.cta.telegram", locale)}
+    </a>
+    <a class="btn btn--secondary" href={`mailto:${email}`}>
+      {email}
+    </a>
+  </div>
+</section>

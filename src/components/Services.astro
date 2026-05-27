@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import type { Locale } from "../lib/t";
+import { t } from "../lib/t";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const all = await getCollection("services", (entry) =>
+  entry.id.startsWith(`${locale}/`),
+);
+const services = all.sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="services" aria-labelledby="services-heading">
+  <h2 id="services-heading">{t("services.heading", locale)}</h2>
+  <p>{t("services.intro", locale)}</p>
+  <div class="grid-cards">
+    {
+      services.map((entry) => (
+        <article class="card" data-service={entry.data.key}>
+          <h3>{entry.data.title}</h3>
+          <p>{entry.data.scope}</p>
+          <p class="meta">
+            <strong>{entry.data.deliverable}</strong>
+          </p>
+          {entry.data.startingPrice && (
+            <p class="meta">
+              {t("services.startingPrice", locale)} {entry.data.startingPrice}
+            </p>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</section>

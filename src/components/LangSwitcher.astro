@@ -1,0 +1,31 @@
+---
+import type { Locale } from "../lib/t";
+import { t } from "../lib/t";
+
+interface Props {
+  currentLocale: Locale;
+}
+
+const { currentLocale } = Astro.props;
+const targetLocale: Locale = currentLocale === "en" ? "uk" : "en";
+---
+
+{/*
+  Hydration directive: load-on-page semantics. The switcher sits in the
+  header and is always in the initial viewport, so deferring with an
+  IntersectionObserver-style "load when in view" directive would be
+  cargo-cult overhead.
+  Astro emits this <script> as a bundled, same-origin module (covered by
+  `script-src 'self'` in the CSP) — no inline JS shipped.
+*/}
+<a
+  class="lang-switcher"
+  href={`/${targetLocale}/`}
+  data-lang-switcher
+  data-target-locale={targetLocale}
+  hreflang={targetLocale}
+>
+  {t("lang.switch", currentLocale)}
+</a>
+
+<script src="/scripts/lang-switcher.js" type="module" defer is:inline></script>

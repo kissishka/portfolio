@@ -1,0 +1,22 @@
+{
+  "nav.home": "Головна",
+  "nav.services": "Послуги",
+  "nav.portfolio": "Портфоліо",
+  "nav.contact": "Контакти",
+  "hero.kicker": "Інженер · Розв'язує задачі",
+  "hero.headline": "Роблю вебсайти, ботів і деплой, що працюють з першого разу.",
+  "hero.subhead": "Продуктизовані послуги для засновників і невеликих команд, яким потрібна справжня інженерія, а не шаблон.",
+  "hero.cta.primary": "Написати в Telegram",
+  "hero.cta.secondary": "Або на пошту",
+  "services.heading": "Послуги",
+  "services.intro": "Три речі, зроблені добре.",
+  "services.startingPrice": "Від",
+  "portfolio.heading": "Обрані проєкти",
+  "portfolio.stubBadge": "Скоро",
+  "contact.heading": "Зв'язатися",
+  "contact.body": "Telegram — найшвидший спосіб мене знайти. Пошта теж працює.",
+  "contact.cta.telegram": "Відкрити Telegram",
+  "contact.cta.email": "Скопіювати email",
+  "footer.copyright": "© 2026 Роман Кочережченко · Зроблено на Astro, розгорнуто на Cloudflare Pages.",
+  "lang.switch": "English"
+}

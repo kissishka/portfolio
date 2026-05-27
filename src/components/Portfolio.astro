@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import type { Locale } from "../lib/t";
+import { t } from "../lib/t";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const all = await getCollection("portfolio", (entry) =>
+  entry.id.startsWith(`${locale}/`),
+);
+const entries = all.sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="portfolio" aria-labelledby="portfolio-heading">
+  <h2 id="portfolio-heading">{t("portfolio.heading", locale)}</h2>
+  <div class="grid-cards">
+    {
+      entries.map((entry) => (
+        <article class="card" data-portfolio-status={entry.data.status}>
+          <h3>{entry.data.title}</h3>
+          <p>{entry.data.summary}</p>
+          <p class="meta">
+            {entry.data.status === "stub" ? (
+              <span class="badge">{t("portfolio.stubBadge", locale)}</span>
+            ) : entry.data.link ? (
+              <a href={entry.data.link} rel="noopener">
+                {entry.data.link}
+              </a>
+            ) : null}
+          </p>
+        </article>
+      ))
+    }
+  </div>
+</section>

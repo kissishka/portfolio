@@ -1,0 +1,18 @@
+---
+// Astro requires a root index page to wire up i18n routing.
+// The real redirect from "/" to "/en/" is served by Cloudflare via public/_redirects.
+// This file is a no-JS fallback in case _redirects ever fails to deploy.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=/en/" />
+    <link rel="canonical" href="/en/" />
+    <title>Portfolio</title>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/en/">/en/</a>...</p>
+  </body>
+</html>
