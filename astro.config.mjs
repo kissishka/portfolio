@@ -2,6 +2,8 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 
+import cloudflare from "@astrojs/cloudflare";
+
 // CSP STRATEGY:
 // Astro 6's stable `security.csp` emits a <meta http-equiv="content-security-policy">
 // per page with auto-generated hashes for all bundled scripts and styles. We feed
@@ -20,10 +22,12 @@ const SCRIPT_HASHES = ["sha256-z3yqRaJgLeAWQXL94tkZemS72w48wQ6CIkrJCFC3178="];
 export default defineConfig({
   site: "https://roman-kocherezhchenko.com",
   trailingSlash: "always",
+
   build: {
     inlineStylesheets: "never",
     format: "directory",
   },
+
   i18n: {
     defaultLocale: "en",
     locales: ["en", "uk"],
@@ -36,10 +40,13 @@ export default defineConfig({
       redirectToDefaultLocale: false,
     },
   },
+
   integrations: [sitemap()],
+
   image: {
     service: { entrypoint: "astro/assets/services/sharp" },
   },
+
   security: {
     csp: {
       algorithm: "SHA-256",
@@ -64,4 +71,6 @@ export default defineConfig({
       ],
     },
   },
+
+  adapter: cloudflare(),
 });
