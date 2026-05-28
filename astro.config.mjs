@@ -45,12 +45,20 @@ export default defineConfig({
       algorithm: "SHA-256",
       scriptDirective: {
         hashes: SCRIPT_HASHES,
+        // Cloudflare Pages injects the Web Analytics beacon
+        // (static.cloudflareinsights.com/beacon.min.js) at the edge — it's not in
+        // our build output, so it only shows up against the deployed site.
+        // NOTE: `resources` REPLACES Astro's default script-src sources, so 'self'
+        // MUST be listed here to keep our own bundled scripts loading. The
+        // auto-generated SCRIPT_HASHES are still appended on top of this list.
+        resources: ["'self'", "https://static.cloudflareinsights.com"],
       },
       directives: [
         "default-src 'self'",
         "img-src 'self' data:",
         "font-src 'self'",
-        "connect-src 'self'",
+        // Cloudflare Web Analytics beacon POSTs RUM data to cloudflareinsights.com.
+        "connect-src 'self' https://cloudflareinsights.com",
         "base-uri 'self'",
         "form-action 'self'",
       ],
