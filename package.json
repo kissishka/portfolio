@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
-    "csp:hash": "node scripts/csp-hash.mjs"
+    "csp:hash": "node scripts/csp-hash.mjs",
+    "og:gen": "node scripts/make-og.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
