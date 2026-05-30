@@ -3,7 +3,7 @@ key: websites
 title: Websites
 scope: Marketing sites, landing pages, and product surfaces that load fast and convert.
 deliverable: Static or near-static site, deployed on edge infrastructure, with a measurable performance baseline.
-startingPrice: from $1,500
+startingPrice: $1,500
 order: 1
 ---
 

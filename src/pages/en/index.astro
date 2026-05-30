@@ -9,13 +9,13 @@ import { t } from "../../lib/t";
 import { TELEGRAM_HANDLE, EMAIL } from "../../lib/contact";
 
 const locale = "en" as const;
-const title = "Engineer · Problem solver — websites, bots, deploys";
+const title = "Roman Kocherezhchenko — software engineer (websites, bots, deploys)";
 const description = t("hero.subhead", locale);
 ---
 
 <BaseLayout locale={locale} title={title} description={description}>
   <header class="site-header">
-    <a class="brand" href="/en/">Engineer</a>
+    <a class="brand" href="/en/" aria-label="Roman Kocherezhchenko — home">RK</a>
     <LangSwitcher currentLocale={locale} />
   </header>
   <main>

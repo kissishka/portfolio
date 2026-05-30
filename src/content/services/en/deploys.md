@@ -3,7 +3,7 @@ key: deploys
 title: Deploys
 scope: Production deployment, CI/CD, and edge infrastructure for small teams.
 deliverable: A reproducible deploy pipeline, security headers and certs in place, a documented rollback procedure.
-startingPrice: from $1,200
+startingPrice: $1,200
 order: 3
 ---
 

@@ -3,7 +3,7 @@ key: bots
 title: Bots
 scope: Telegram, Discord, and Slack bots that automate real workflows.
 deliverable: Production-deployed bot, hosted on infrastructure you own, with logs and a runbook.
-startingPrice: from $2,000
+startingPrice: $2,000
 order: 2
 ---
 

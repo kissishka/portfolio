@@ -16,24 +16,32 @@ const services = all.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <section class="services" aria-labelledby="services-heading">
-  <h2 id="services-heading">{t("services.heading", locale)}</h2>
-  <p>{t("services.intro", locale)}</p>
-  <div class="grid-cards">
+  <div class="section-head">
+    <h2 id="services-heading">{t("services.heading", locale)}</h2>
+    <p class="section-intro">{t("services.intro", locale)}</p>
+  </div>
+  <ol class="service-list">
     {
-      services.map((entry) => (
-        <article class="card" data-service={entry.data.key}>
-          <h3>{entry.data.title}</h3>
-          <p>{entry.data.scope}</p>
-          <p class="meta">
-            <strong>{entry.data.deliverable}</strong>
-          </p>
+      services.map((entry, i) => (
+        <li class="service" data-service={entry.data.key}>
+          <span class="service__index" aria-hidden="true">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <div class="service__body">
+            <h3 class="service__title">{entry.data.title}</h3>
+            <p class="service__scope">{entry.data.scope}</p>
+            <p class="service__deliverable">{entry.data.deliverable}</p>
+          </div>
           {entry.data.startingPrice && (
-            <p class="meta">
-              {t("services.startingPrice", locale)} {entry.data.startingPrice}
+            <p class="service__price">
+              <span class="service__price-label">
+                {t("services.startingPrice", locale)}
+              </span>
+              {entry.data.startingPrice}
             </p>
           )}
-        </article>
+        </li>
       ))
     }
-  </div>
+  </ol>
 </section>

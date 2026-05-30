@@ -3,7 +3,7 @@ key: bots
 title: Боти
 scope: Telegram-, Discord- та Slack-боти, що автоматизують реальні робочі процеси.
 deliverable: Бот у продакшені, розгорнутий на вашій інфраструктурі, з логами та runbook.
-startingPrice: від $2,000
+startingPrice: $2,000
 order: 2
 ---
 
