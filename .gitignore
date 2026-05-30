@@ -8,6 +8,9 @@ dist/
 # Astro
 .astro/
 
+# Wrangler local state (config itself, wrangler.jsonc, IS committed)
+.wrangler/
+
 # Environment / secrets
 .env
 .env.local

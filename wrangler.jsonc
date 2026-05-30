@@ -1,0 +1,20 @@
+{
+  // Static-assets-only Worker deploy for this Astro site.
+  //
+  // WHY THIS FILE EXISTS: the Workers Builds deploy command is `npx wrangler
+  // deploy`. With no committed config, wrangler ran its non-interactive setup
+  // wizard on every build (`astro add cloudflare`), which injected the
+  // @astrojs/cloudflare adapter and a default SESSION KV binding. wrangler then
+  // tried to auto-provision the `portfolio-session` KV namespace on each deploy
+  // and failed once it already existed ([code: 10014]), blocking every deploy
+  // after the first. This site is 100% static and uses no bindings, so we pin
+  // an explicit assets-only config: the wizard no longer runs, no adapter is
+  // added, and `dist/` is uploaded directly. `_headers` / `_redirects` inside
+  // dist/ continue to be honored by Workers static assets.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio",
+  "compatibility_date": "2026-05-30",
+  "assets": {
+    "directory": "./dist"
+  }
+}
