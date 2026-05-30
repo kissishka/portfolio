@@ -18,7 +18,7 @@ const htmlLang = locale === "uk" ? "uk-UA" : "en";
 
 const siteOrigin = Astro.site
   ? Astro.site.origin
-  : "https://portfolio.example.com";
+  : "https://roman-kocherezhchenko.com";
 
 const canonicalPath = `/${locale}/${pathSuffix}`;
 const canonicalUrl = `${siteOrigin}${canonicalPath}`;
@@ -47,7 +47,8 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/og-default.png`;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b0d10" />
+    <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
     <meta name="color-scheme" content="light dark" />
 
     <title>{title}</title>
@@ -78,11 +79,13 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/og-default.png`;
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Roman Kocherezhchenko — Software Engineer" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Roman Kocherezhchenko — Software Engineer" />
 
     <script type="application/ld+json" set:html={PERSON_JSONLD} is:inline />
   </head>
