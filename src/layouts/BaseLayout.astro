@@ -1,5 +1,6 @@
 ---
 import { PERSON_JSONLD } from "../lib/jsonld";
+import { THEME_BOOT } from "../lib/themeBoot";
 import type { Locale } from "../lib/t";
 import "../styles/global.css";
 
@@ -47,9 +48,14 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/og-default.png`;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/* Apply the stored theme before first paint (no FOUC). Inline + CSP-hashed
+        via SCRIPT_HASHES; rerun `npm run csp:hash` if THEME_BOOT changes. */}
+    <script is:inline set:html={THEME_BOOT} />
+
     <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark light" />
 
     <title>{title}</title>
     <meta name="description" content={description} />

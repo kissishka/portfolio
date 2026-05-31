@@ -5,17 +5,19 @@ import sitemap from "@astrojs/sitemap";
 // CSP STRATEGY:
 // Astro 6's stable `security.csp` emits a <meta http-equiv="content-security-policy">
 // per page with auto-generated hashes for all bundled scripts and styles. We feed
-// the manual JSON-LD payload hash via `scriptDirective.hashes` and append the
-// remaining directives via `directives`. No `'unsafe-inline'` anywhere.
+// the manual inline-script payload hashes via `scriptDirective.hashes` and append
+// the remaining directives via `directives`. No `'unsafe-inline'` anywhere.
 //
 // `_headers` keeps everything that doesn't belong in (or can't live in) a meta tag:
 // HSTS, X-Frame-Options (clickjacking defense — frame-ancestors doesn't work in meta),
 // X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
 //
-// `npm run csp:hash` recomputes the JSON-LD payload hash in src/lib/jsonld.ts
-// and patches the `SCRIPT_HASHES` const below. Rerun after every JSON-LD edit.
+// `npm run csp:hash` recomputes the inline JSON-LD (src/lib/jsonld.ts) and
+// theme-boot (src/lib/themeBoot.ts) payload hashes and patches the
+// `SCRIPT_HASHES` const below. Rerun after editing either file. The `postbuild`
+// csp-verify guard fails the build if any inline script hash is missing here.
 /** @type {`sha256-${string}`[]} */
-const SCRIPT_HASHES = ["sha256-z3yqRaJgLeAWQXL94tkZemS72w48wQ6CIkrJCFC3178="];
+const SCRIPT_HASHES = ["sha256-z3yqRaJgLeAWQXL94tkZemS72w48wQ6CIkrJCFC3178=", "sha256-vCjPtM7wROwtuzNZfQnx90sgST6SziuhGtU7vyXTF0o="];
 
 export default defineConfig({
   site: "https://roman-kocherezhchenko.com",

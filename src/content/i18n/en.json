@@ -14,5 +14,6 @@
   "contact.body": "Telegram is the fastest way to reach me — email works too.",
   "contact.cta.telegram": "Open Telegram",
   "footer.copyright": "© 2026 Roman Kocherezhchenko · Built with Astro, hosted on Cloudflare Pages.",
-  "lang.switch": "Українська"
+  "lang.switch": "Українська",
+  "theme.toggle": "Toggle theme"
 }

@@ -22,6 +22,8 @@
    a single real weight (no faux-bold). Emphasis is carried by scale, tracking,
    and the one high-contrast primary button. */
 :root {
+  color-scheme: dark;
+
   --bg: #0b0d10;
   --bg-2: #14171b;
   --fg: #e8eaed;
@@ -433,8 +435,13 @@ footer.site-footer p {
 
 /* ---- light mode --------------------------------------------------------- */
 
+/* Light palette. Applied (a) under a system light preference unless the visitor
+   has explicitly forced dark, and (b) for an explicit light choice. The two rule
+   bodies are identical by design — KEEP THEM IN SYNC. Dark stays the default for
+   "no preference", preserving the dark-first identity. */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
     --bg: #fafafa;
     --bg-2: #ffffff;
     --fg: #15181b;
@@ -447,5 +454,144 @@ footer.site-footer p {
     --btn-bg: #15181b;
     --btn-bg-hover: #2c323a;
     --btn-fg: #fafafa;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fafafa;
+  --bg-2: #ffffff;
+  --fg: #15181b;
+  --fg-2: #565d66;
+  --fg-3: #6b727b;
+  --accent: #3b4654;
+  --accent-2: #1f2731;
+  --border: #e4e7ea;
+  --border-2: #d2d7dc;
+  --btn-bg: #15181b;
+  --btn-bg-hover: #2c323a;
+  --btn-fg: #fafafa;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* ---- theme toggle ------------------------------------------------------- */
+
+.site-header__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Button-only enhancement: hidden unless scripting is available. */
+.theme-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root[data-js] .theme-toggle {
+  display: inline-flex;
+}
+
+/* Roomier tap target on touch devices (WCAG 2.5.5 AAA 44px). */
+@media (pointer: coarse) {
+  .theme-toggle {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  color: var(--fg);
+  border-color: var(--fg-2);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.theme-toggle .icon {
+  display: block;
+}
+
+/* Icon reflects the ACTIVE theme via the same dark-first logic as the palette:
+   sun shown on dark (click -> light), moon shown on light (click -> dark). */
+.theme-toggle .icon-sun {
+  display: block;
+}
+.theme-toggle .icon-moon {
+  display: none;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .theme-toggle .icon-sun {
+    display: none;
+  }
+  :root:not([data-theme]) .theme-toggle .icon-moon {
+    display: block;
+  }
+}
+:root[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
+}
+:root[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  display: none;
+}
+
+/* Smoothest switch: an expanding circle from the toggle, driven by the JS-set
+   --tt-* custom props. Falls back to an instant switch where View Transitions
+   are unsupported or reduced motion is requested (the JS skips the transition,
+   and this block is gated on prefers-reduced-motion anyway). */
+/* Registered so the reveal origin always resolves (no guaranteed-invalid first
+   frame painting from the wrong corner); JS overwrites these per click. */
+@property --tt-x {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+@property --tt-y {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  /* Decelerate (ease-out) curve so the circle launches off the pointer and
+     settles at the rim — reads smoother than ease-in-out for a reveal. */
+  ::view-transition-new(root) {
+    animation: theme-reveal 0.4s cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0px at var(--tt-x) var(--tt-y));
+  }
+  to {
+    clip-path: circle(var(--tt-r, 150vmax) at var(--tt-x) var(--tt-y));
   }
 }

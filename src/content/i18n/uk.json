@@ -14,5 +14,6 @@
   "contact.body": "Telegram — найшвидший спосіб зв'язатися. Пошта теж працює.",
   "contact.cta.telegram": "Відкрити Telegram",
   "footer.copyright": "© 2026 Роман Кочережченко · Зроблено на Astro, розгорнуто на Cloudflare Pages.",
-  "lang.switch": "English"
+  "lang.switch": "English",
+  "theme.toggle": "Перемкнути тему"
 }

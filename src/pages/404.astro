@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 // Cloudflare Pages serves this as dist/404.html for ANY unmatched route, so the
 // visitor's locale is unknown here. Keep the page bilingual (en + uk) and link
@@ -16,6 +17,9 @@ const locale = "en" as const;
 >
   <header class="site-header">
     <a class="brand" href="/en/" aria-label="Roman Kocherezhchenko — home">RK</a>
+    <div class="site-header__controls">
+      <ThemeToggle locale={locale} />
+    </div>
   </header>
   <main>
     <section class="hero">
