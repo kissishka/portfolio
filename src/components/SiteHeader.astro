@@ -1,0 +1,30 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import LangSwitcher from "./LangSwitcher.astro";
+import { t } from "../lib/t";
+import type { Locale } from "../lib/t";
+
+interface Props {
+  locale: Locale;
+  /** The 404 page hides the language switcher — the visitor's locale is unknown there. */
+  langSwitcher?: boolean;
+}
+
+const { locale, langSwitcher = true } = Astro.props;
+
+const homeLabel =
+  locale === "uk"
+    ? "Роман Кочережченко — на головну"
+    : "Roman Kocherezhchenko — home";
+---
+
+<header class="site-header">
+  <a class="brand" href={`/${locale}/`} aria-label={homeLabel}>RK</a>
+  <nav class="site-nav" aria-label={t("nav.label", locale)}>
+    <a href={`/${locale}/blog/`}>{t("nav.blog", locale)}</a>
+  </nav>
+  <div class="site-header__controls">
+    <ThemeToggle locale={locale} />
+    {langSwitcher && <LangSwitcher currentLocale={locale} />}
+  </div>
+</header>

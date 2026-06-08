@@ -4,23 +4,12 @@ import { t } from "../lib/t";
 
 interface Props {
   locale: Locale;
-  telegramHandle: string;
-  email: string;
 }
 
-const { locale, telegramHandle, email } = Astro.props;
+const { locale } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="hero-heading">
   <p class="kicker">{t("hero.kicker", locale)}</p>
   <h1 id="hero-heading">{t("hero.headline", locale)}</h1>
-  <p class="lede">{t("hero.subhead", locale)}</p>
-  <div class="cta-row">
-    <a class="btn btn--primary" href={`https://t.me/${telegramHandle}`} rel="noopener">
-      {t("hero.cta.primary", locale)}
-    </a>
-    <a class="btn btn--secondary" href={`mailto:${email}`}>
-      {t("hero.cta.secondary", locale)}
-    </a>
-  </div>
 </section>

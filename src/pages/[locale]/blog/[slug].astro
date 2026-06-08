@@ -1,0 +1,95 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import { isLocale, t } from "../../../lib/t";
+import { postSlug, readingMinutes, formatDate } from "../../../lib/blog";
+
+export async function getStaticPaths() {
+  const all = await getCollection("blog", (entry) =>
+    import.meta.env.PROD ? entry.data.draft !== true : true,
+  );
+  return all.map((entry) => {
+    const [locale, ...rest] = entry.id.split("/");
+    return { params: { locale, slug: rest.join("/") }, props: { entry } };
+  });
+}
+
+const { entry } = Astro.props;
+const { locale: localeParam } = Astro.params;
+if (!isLocale(localeParam)) throw new Error(`Unknown locale: ${localeParam}`);
+const locale = localeParam;
+
+const { Content } = await render(entry);
+const slug = postSlug(entry.id);
+const minutes = readingMinutes(entry.body);
+
+const title = `${entry.data.title} — Roman Kocherezhchenko`;
+const description = entry.data.description;
+const pathSuffix = `blog/${slug}/`;
+const feedHref = `/${locale}/blog/rss.xml`;
+---
+
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={description}
+  pathSuffix={pathSuffix}
+  feedHref={feedHref}
+  ogType="article"
+  publishedTime={entry.data.pubDate.toISOString()}
+  modifiedTime={entry.data.updatedDate?.toISOString()}
+>
+  <SiteHeader locale={locale} />
+  <main>
+    <article class="post">
+      <header class="post__header">
+        <p class="post__meta">
+          <time datetime={entry.data.pubDate.toISOString()}>
+            {formatDate(entry.data.pubDate, locale)}
+          </time>
+          <span aria-hidden="true"> · </span>
+          <span>{minutes} {t("blog.minRead", locale)}</span>
+          {
+            entry.data.updatedDate && (
+              <>
+                <span aria-hidden="true"> · </span>
+                <span>
+                  {t("blog.updated", locale)}{" "}
+                  <time datetime={entry.data.updatedDate.toISOString()}>
+                    {formatDate(entry.data.updatedDate, locale)}
+                  </time>
+                </span>
+              </>
+            )
+          }
+        </p>
+        <h1 class="post__title">{entry.data.title}</h1>
+        <p class="post__lede">{entry.data.description}</p>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        entry.data.tags.length > 0 && (
+          <footer class="post__tags">
+            <span class="post__tags-label">{t("blog.tagsLabel", locale)}:</span>
+            {entry.data.tags.map((tag) => (
+              <a class="tag" href={`/${locale}/blog/tags/${tag}/`}>
+                #{tag}
+              </a>
+            ))}
+          </footer>
+        )
+      }
+
+      <p class="post__back">
+        <a href={`/${locale}/blog/`}>{t("blog.back", locale)}</a>
+      </p>
+    </article>
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>

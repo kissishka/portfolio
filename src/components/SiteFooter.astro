@@ -1,0 +1,14 @@
+---
+import { t } from "../lib/t";
+import type { Locale } from "../lib/t";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<footer class="site-footer">
+  <p>{t("footer.copyright", locale)}</p>
+</footer>

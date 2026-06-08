@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 
 // Cloudflare Pages serves this as dist/404.html for ANY unmatched route, so the
 // visitor's locale is unknown here. Keep the page bilingual (en + uk) and link
 // to both home pages. The 404 HTTP status keeps it out of search indexes, so the
-// canonical/hreflang emitted by BaseLayout are immaterial.
+// canonical/hreflang emitted by BaseLayout are immaterial. The header hides its
+// language switcher (langSwitcher={false}) because there is no twin route to map.
 const locale = "en" as const;
 ---
 
@@ -15,12 +17,7 @@ const locale = "en" as const;
   description="The page you’re looking for doesn’t exist or has moved."
   pathSuffix="404/"
 >
-  <header class="site-header">
-    <a class="brand" href="/en/" aria-label="Roman Kocherezhchenko — home">RK</a>
-    <div class="site-header__controls">
-      <ThemeToggle locale={locale} />
-    </div>
-  </header>
+  <SiteHeader locale={locale} langSwitcher={false} />
   <main>
     <section class="hero">
       <p class="kicker">404</p>
@@ -35,4 +32,5 @@ const locale = "en" as const;
       </div>
     </section>
   </main>
+  <SiteFooter locale={locale} />
 </BaseLayout>

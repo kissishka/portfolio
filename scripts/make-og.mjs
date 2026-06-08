@@ -28,9 +28,8 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
   <rect width="1200" height="630" fill="url(#glow)"/>
   <rect x="0" y="0" width="14" height="630" fill="#7cc4ff"/>
   <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
-    <text x="96" y="252" fill="#7cc4ff" font-size="30" font-weight="600" letter-spacing="7">SOFTWARE ENGINEER</text>
-    <text x="92" y="350" fill="#e8eaed" font-size="76" font-weight="700">Roman Kocherezhchenko</text>
-    <text x="96" y="424" fill="#a8b0b8" font-size="38">Websites &#183; Bots &#183; Deploys</text>
+    <text x="96" y="300" fill="#7cc4ff" font-size="30" font-weight="600" letter-spacing="7">AI-ENABLED ENGINEER</text>
+    <text x="92" y="398" fill="#e8eaed" font-size="76" font-weight="700">Roman Kocherezhchenko</text>
     <text x="96" y="566" fill="#7cc4ff" font-size="30" font-weight="500">roman-kocherezhchenko.com</text>
   </g>
 </svg>`;

@@ -1,34 +1,22 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
 import Hero from "../../components/Hero.astro";
-import Services from "../../components/Services.astro";
-import Portfolio from "../../components/Portfolio.astro";
 import Contact from "../../components/Contact.astro";
-import LangSwitcher from "../../components/LangSwitcher.astro";
-import ThemeToggle from "../../components/ThemeToggle.astro";
 import { t } from "../../lib/t";
 import { TELEGRAM_HANDLE, EMAIL } from "../../lib/contact";
 
 const locale = "en" as const;
-const title = "Roman Kocherezhchenko — software engineer (websites, bots, deploys)";
-const description = t("hero.subhead", locale);
+const title = "Roman Kocherezhchenko — AI-Enabled Engineer";
+const description = t("meta.description", locale);
 ---
 
 <BaseLayout locale={locale} title={title} description={description}>
-  <header class="site-header">
-    <a class="brand" href="/en/" aria-label="Roman Kocherezhchenko — home">RK</a>
-    <div class="site-header__controls">
-      <ThemeToggle locale={locale} />
-      <LangSwitcher currentLocale={locale} />
-    </div>
-  </header>
+  <SiteHeader locale={locale} />
   <main>
-    <Hero locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />
-    <Services locale={locale} />
-    <Portfolio locale={locale} />
+    <Hero locale={locale} />
     <Contact locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />
   </main>
-  <footer class="site-footer">
-    <p>{t("footer.copyright", locale)}</p>
-  </footer>
+  <SiteFooter locale={locale} />
 </BaseLayout>

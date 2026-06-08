@@ -17,7 +17,7 @@ import sitemap from "@astrojs/sitemap";
 // `SCRIPT_HASHES` const below. Rerun after editing either file. The `postbuild`
 // csp-verify guard fails the build if any inline script hash is missing here.
 /** @type {`sha256-${string}`[]} */
-const SCRIPT_HASHES = ["sha256-z3yqRaJgLeAWQXL94tkZemS72w48wQ6CIkrJCFC3178=", "sha256-vCjPtM7wROwtuzNZfQnx90sgST6SziuhGtU7vyXTF0o="];
+const SCRIPT_HASHES = ["sha256-gVXDeYnhFIMjrrZccWUk3Va1INMnDo7pE64oFEmkEuo=", "sha256-vCjPtM7wROwtuzNZfQnx90sgST6SziuhGtU7vyXTF0o="];
 
 export default defineConfig({
   site: "https://roman-kocherezhchenko.com",
@@ -38,7 +38,21 @@ export default defineConfig({
       redirectToDefaultLocale: false,
     },
   },
-  integrations: [sitemap()],
+  markdown: {
+    // Class-based highlighting (Prism), NOT the default Shiki. Shiki emits an
+    // inline `style="color:…"` attribute on every token; the strict CSP here
+    // has no 'unsafe-inline' in style-src, so the browser would block those —
+    // breaking the Lighthouse Best-Practices gate. Prism emits class names
+    // instead; the token colors live in global.css (external, covered by
+    // 'self'). Highlighting is build-time only, so no client JS ships either.
+    syntaxHighlight: "prism",
+  },
+  integrations: [
+    sitemap({
+      // RSS endpoints are feeds, not indexable pages — keep them out of the sitemap.
+      filter: (page) => !page.includes("/blog/rss.xml"),
+    }),
+  ],
   image: {
     service: { entrypoint: "astro/assets/services/sharp" },
   },

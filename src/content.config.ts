@@ -27,4 +27,19 @@ const portfolio = defineCollection({
     }),
 });
 
-export const collections = { services, portfolio };
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    // Tags must be lowercase, URL-safe slugs — each one becomes a
+    // /<locale>/blog/tags/<tag>/ route, and the language switcher relies on the
+    // same tag existing in both locales (translated posts share identical tags).
+    tags: z.array(z.string().regex(/^[a-z0-9-]+$/)).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { services, portfolio, blog };

@@ -1,0 +1,89 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import { locales, isLocale, t } from "../../../lib/t";
+import {
+  getPosts,
+  getTags,
+  postSlug,
+  readingMinutes,
+  formatDate,
+} from "../../../lib/blog";
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale: localeParam } = Astro.params;
+if (!isLocale(localeParam)) throw new Error(`Unknown locale: ${localeParam}`);
+const locale = localeParam;
+
+const posts = await getPosts(locale);
+const tags = await getTags(locale);
+
+const title = `${t("blog.heading", locale)} — Roman Kocherezhchenko`;
+const description = t("blog.intro", locale);
+const feedHref = `/${locale}/blog/rss.xml`;
+---
+
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={description}
+  pathSuffix="blog/"
+  feedHref={feedHref}
+>
+  <SiteHeader locale={locale} />
+  <main>
+    <section class="blog-index" aria-labelledby="blog-heading">
+      <div class="section-head">
+        <h1 id="blog-heading">{t("blog.heading", locale)}</h1>
+        <p class="section-intro">{t("blog.intro", locale)}</p>
+      </div>
+
+      {
+        tags.length > 0 && (
+          <nav class="tag-cloud" aria-label={t("blog.topics", locale)}>
+            {tags.map((tag) => (
+              <a class="tag" href={`/${locale}/blog/tags/${tag}/`}>
+                #{tag}
+              </a>
+            ))}
+          </nav>
+        )
+      }
+
+      {
+        posts.length === 0 ? (
+          <p class="blog-empty">{t("blog.empty", locale)}</p>
+        ) : (
+          <ul class="post-list">
+            {posts.map((post) => {
+              const slug = postSlug(post.id);
+              const minutes = readingMinutes(post.body);
+              return (
+                <li class="post-item">
+                  <a class="post-item__link" href={`/${locale}/blog/${slug}/`}>
+                    <h2 class="post-item__title">{post.data.title}</h2>
+                    <p class="post-item__summary">{post.data.description}</p>
+                  </a>
+                  <p class="post-item__meta">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {formatDate(post.data.pubDate, locale)}
+                    </time>
+                    <span aria-hidden="true"> · </span>
+                    <span>
+                      {minutes} {t("blog.minRead", locale)}
+                    </span>
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </section>
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>

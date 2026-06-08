@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import { locales, isLocale, t } from "../../../../lib/t";
+import {
+  getPosts,
+  postSlug,
+  readingMinutes,
+  formatDate,
+  type BlogPost,
+} from "../../../../lib/blog";
+
+export async function getStaticPaths() {
+  const paths: Array<{
+    params: { locale: string; tag: string };
+    props: { tag: string; posts: BlogPost[] };
+  }> = [];
+
+  for (const locale of locales) {
+    const posts = await getPosts(locale);
+    const byTag = new Map<string, BlogPost[]>();
+    for (const post of posts) {
+      for (const tag of post.data.tags) {
+        const list = byTag.get(tag) ?? [];
+        list.push(post);
+        byTag.set(tag, list);
+      }
+    }
+    for (const [tag, tagPosts] of byTag) {
+      paths.push({ params: { locale, tag }, props: { tag, posts: tagPosts } });
+    }
+  }
+
+  return paths;
+}
+
+const { tag, posts } = Astro.props;
+const { locale: localeParam } = Astro.params;
+if (!isLocale(localeParam)) throw new Error(`Unknown locale: ${localeParam}`);
+const locale = localeParam;
+
+const heading = `${t("blog.postsTagged", locale)} #${tag}`;
+const title = `${heading} — Roman Kocherezhchenko`;
+const pathSuffix = `blog/tags/${tag}/`;
+---
+
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={heading}
+  pathSuffix={pathSuffix}
+>
+  <SiteHeader locale={locale} />
+  <main>
+    <section class="blog-index" aria-labelledby="tag-heading">
+      <div class="section-head">
+        <p class="kicker">
+          <a href={`/${locale}/blog/`}>{t("blog.heading", locale)}</a>
+        </p>
+        <h1 id="tag-heading">
+          {t("blog.postsTagged", locale)} <span class="tag tag--lg">#{tag}</span>
+        </h1>
+      </div>
+
+      <ul class="post-list">
+        {
+          posts.map((post) => {
+            const slug = postSlug(post.id);
+            const minutes = readingMinutes(post.body);
+            return (
+              <li class="post-item">
+                <a class="post-item__link" href={`/${locale}/blog/${slug}/`}>
+                  <h2 class="post-item__title">{post.data.title}</h2>
+                  <p class="post-item__summary">{post.data.description}</p>
+                </a>
+                <p class="post-item__meta">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {formatDate(post.data.pubDate, locale)}
+                  </time>
+                  <span aria-hidden="true"> · </span>
+                  <span>
+                    {minutes} {t("blog.minRead", locale)}
+                  </span>
+                </p>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <p class="post__back">
+        <a href={`/${locale}/blog/`}>{t("blog.back", locale)}</a>
+      </p>
+    </section>
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>
