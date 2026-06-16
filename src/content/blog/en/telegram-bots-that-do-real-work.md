@@ -1,11 +1,11 @@
 ---
 title: "Telegram bots that do real work"
-description: "Most bots are toys. The useful ones share a shape — a clear trigger, an idempotent action, and a boring deployment. Here's the skeleton I reach for."
+description: "Most bots are toys. The useful ones share a shape: a clear trigger, an idempotent action, and a boring deployment. Here's the skeleton I reach for."
 pubDate: 2026-06-04
 tags: ["bots", "automation"]
 ---
 
-A bot earns its keep when it removes a recurring manual step — not when it
+A bot earns its keep when it removes a recurring manual step, not when it
 replies with a clever message. The useful ones I've built all share the same
 small shape.
 
@@ -36,7 +36,7 @@ again with no double deploys, no duplicate messages.
 ## Keep secrets out of the code
 
 The bot token and any API keys live in the platform's secret store, injected as
-environment variables at runtime — never in the repo. The CSP and headers
+environment variables at runtime, never in the repo. The CSP and headers
 discipline from the rest of the site applies here too: least privilege, by
 default.
 
