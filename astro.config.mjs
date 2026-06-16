@@ -1,6 +1,41 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import { rehypeHeadingIds } from "@astrojs/markdown-remark";
+
+// Build-time rehype plugin: append a decorative permalink anchor to every h2/h3
+// Astro has assigned an id. The visible "#" glyph comes from CSS (::before), so
+// the anchor has no text content and never leaks into the table-of-contents
+// heading text. No client JS and no new dependency — keeps the zero-runtime-JS /
+// strict-CSP posture intact.
+function rehypeHeadingAnchors() {
+  return (tree) => {
+    const visit = (node) => {
+      if (
+        node.type === "element" &&
+        (node.tagName === "h2" || node.tagName === "h3") &&
+        node.properties &&
+        node.properties.id
+      ) {
+        node.children.push({
+          type: "element",
+          tagName: "a",
+          properties: {
+            className: ["heading-anchor"],
+            href: `#${node.properties.id}`,
+            ariaHidden: "true",
+            tabIndex: -1,
+          },
+          children: [],
+        });
+      }
+      if (node.children) {
+        for (const child of node.children) visit(child);
+      }
+    };
+    visit(tree);
+  };
+}
 
 // CSP STRATEGY:
 // Astro 6's stable `security.csp` emits a <meta http-equiv="content-security-policy">
@@ -46,6 +81,10 @@ export default defineConfig({
     // instead; the token colors live in global.css (external, covered by
     // 'self'). Highlighting is build-time only, so no client JS ships either.
     syntaxHighlight: "prism",
+    // Clickable "#" permalinks on h2/h3 (build-time, no client JS). rehypeHeadingIds
+    // must run first so the anchor plugin sees the ids — Astro applies its own id
+    // plugin AFTER user plugins, so we include it explicitly to control ordering.
+    rehypePlugins: [rehypeHeadingIds, rehypeHeadingAnchors],
   },
   integrations: [
     sitemap({

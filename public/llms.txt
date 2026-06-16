@@ -1,0 +1,18 @@
+# Roman Kocherezhchenko
+
+> AI-Enabled Engineer. I design, build, and ship software — fast static sites, Telegram bots, edge deploys — and write deep technical notes on the systems work behind them. Contact: https://t.me/roman_kocherezhchenko
+
+The site is bilingual (English and Ukrainian); the English pages below are canonical. The flagship writing is a series on **risp**, a small, zero-dependency Lisp interpreter written in Rust (a tree-walker, a bytecode VM, and an optional Cranelift JIT), built by pairing with Claude Code.
+
+## risp — a Lisp interpreter in Rust
+
+- [Building a Lisp interpreter in Rust with Claude Code](https://roman-kocherezhchenko.com/en/blog/building-a-lisp-in-rust-with-claude-code/): The overview — one `Value` enum as both AST and runtime value, three execution engines sharing one evaluator, a no-panic error contract, and the differential-testing discipline (`agree()`) that keeps AI-written systems code correct against a reference interpreter.
+- [Designing a Lisp interpreter in Rust with no stack overflows](https://roman-kocherezhchenko.com/en/blog/no-stack-overflow-lisp-interpreter-rust/): How an explicit-stack CEK evaluator, a hand-written iterative `Drop`, and loop-based printing/equality let the interpreter read, free, compare, and evaluate million-deep structures without overflowing the Rust call stack.
+- [How a bytecode VM in Rust beat CPython 3.14](https://roman-kocherezhchenko.com/en/blog/bytecode-vm-faster-than-cpython/): Eleven profile-guided optimization steps — lexical-addressed locals, unboxed `i64` arithmetic, an unchecked hot loop, in-place self-tail-calls — taking `fib(30)` from 1682 ms to 95 ms and beating CPython on loops and arithmetic.
+- [Adding a Cranelift JIT that runs 10–23× faster than CPython](https://roman-kocherezhchenko.com/en/blog/cranelift-jit-for-a-lisp-in-rust/): An opt-in Cranelift JIT for the integer subset — a decline-don't-guess type checker, lowering `if`/`cond`/`let` to Cranelift IR, inline signed-overflow detection, tail-calls as loop back-edges, and a deopt guard instead of a crash.
+- [Macros and quasiquote: code that writes code in risp](https://roman-kocherezhchenko.com/en/blog/lisp-macros-quasiquote-rust/): How `defmacro`, demand-driven expansion, the quasiquote engine, and `gensym` let a Lisp grow control structures like `while` and `unless` that no function can express.
+
+## About
+
+- [Home](https://roman-kocherezhchenko.com/en/): Who I am and how to get in touch.
+- [Blog index](https://roman-kocherezhchenko.com/en/blog/): All posts.

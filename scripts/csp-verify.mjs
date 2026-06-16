@@ -5,6 +5,11 @@
 // `npm run csp:hash` — BEFORE it ships, turning a silent CSP break (FOUC + a
 // blocked inline script) into a loud build failure.
 //
+// `application/ld+json` blocks are EXCLUDED: they are data blocks, not
+// script-like, so CSP `script-src` never governs them (a browser executes and
+// blocks neither, hashed or not). Excluding them lets the per-post
+// BlogPosting/BreadcrumbList JSON-LD be dynamic per page without a per-page hash.
+//
 // Wired as `postbuild`, so it runs automatically after `astro build` (locally
 // and in the Cloudflare build). Usage: node scripts/csp-verify.mjs
 
@@ -26,8 +31,11 @@ function htmlFiles(dir) {
   return out;
 }
 
-// Inline scripts only (no src=); covers the JSON-LD and the theme-boot payloads.
-const inlineScriptRe = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g;
+// Inline scripts only (no src=). The first capture group is the opening-tag
+// attribute text, so we can skip `type="application/ld+json"` data blocks; the
+// second is the script body that gets hashed.
+const inlineScriptRe = /<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g;
+const ldJsonRe = /type\s*=\s*["']application\/ld\+json["']/i;
 const metaRe = /<meta\b[^>]*content-security-policy[^>]*>/i;
 const contentRe = /content="([^"]*)"/i;
 
@@ -38,7 +46,9 @@ const files = htmlFiles(distDir);
 for (const file of files) {
   const html = readFileSync(file, "utf8");
   const rel = relative(repoRoot, file);
-  const inlineScripts = [...html.matchAll(inlineScriptRe)].map((m) => m[1]);
+  const inlineScripts = [...html.matchAll(inlineScriptRe)]
+    .filter((m) => !ldJsonRe.test(m[1]))
+    .map((m) => m[2]);
   if (inlineScripts.length === 0) continue;
 
   const metaTag = html.match(metaRe);

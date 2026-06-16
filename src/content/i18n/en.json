@@ -19,6 +19,9 @@
   "blog.tagsLabel": "Tags",
   "blog.postsTagged": "Posts tagged",
   "blog.topics": "Topics",
+  "blog.onThisPage": "On this page",
+  "blog.related": "Related posts",
+  "blog.faq": "Frequently asked questions",
   "blog.feedTitle": "Roman Kocherezhchenko — Blog",
   "blog.feedDescription": "Notes on building and shipping software — performance, deploys, and small automations."
 }

@@ -1,10 +1,18 @@
 ---
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import { isLocale, t } from "../../../lib/t";
-import { postSlug, readingMinutes, formatDate } from "../../../lib/blog";
+import {
+  postSlug,
+  readingMinutes,
+  formatDate,
+  getRelatedPosts,
+} from "../../../lib/blog";
+import { blogPostingJsonLd } from "../../../lib/jsonld";
 
 export async function getStaticPaths() {
   const all = await getCollection("blog", (entry) =>
@@ -21,14 +29,58 @@ const { locale: localeParam } = Astro.params;
 if (!isLocale(localeParam)) throw new Error(`Unknown locale: ${localeParam}`);
 const locale = localeParam;
 
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const slug = postSlug(entry.id);
 const minutes = readingMinutes(entry.body);
+
+// Which locales this exact post is published in, so hreflang only advertises
+// pages that actually exist (an untranslated post must not link a 404 uk/en
+// alternate). Mirrors getStaticPaths' draft filtering.
+const publishedBlog = await getCollection("blog", (e) =>
+  import.meta.env.PROD ? e.data.draft !== true : true,
+);
+const availableLocales = (["en", "uk"] as const).filter((loc) =>
+  publishedBlog.some((e) => e.id === `${loc}/${slug}`),
+);
+
+// Table of contents from the post's section headings (h2 only).
+const toc = headings.filter((h) => h.depth === 2);
+// Related posts that share a tag (build-time internal linking).
+const related = await getRelatedPosts(entry, locale, 3);
 
 const title = `${entry.data.title} — Roman Kocherezhchenko`;
 const description = entry.data.description;
 const pathSuffix = `blog/${slug}/`;
 const feedHref = `/${locale}/blog/rss.xml`;
+
+const siteOrigin = Astro.site
+  ? Astro.site.origin
+  : "https://roman-kocherezhchenko.com";
+const postUrl = `${siteOrigin}/${locale}/${pathSuffix}`;
+
+// Per-post OG card if one has been generated (`npm run og:gen`); otherwise the
+// site default is used (BaseLayout falls back when ogImage is undefined).
+const ogImage = existsSync(
+  join(process.cwd(), "public", "og", locale, `${slug}.png`),
+)
+  ? `${siteOrigin}/og/${locale}/${slug}.png`
+  : undefined;
+
+const jsonLd = blogPostingJsonLd({
+  title: entry.data.title,
+  description,
+  url: postUrl,
+  image: ogImage ?? `${siteOrigin}/og-default.png`,
+  datePublished: entry.data.pubDate.toISOString(),
+  dateModified: entry.data.updatedDate?.toISOString(),
+  tags: entry.data.tags,
+  locale,
+  origin: siteOrigin,
+  blogUrl: `${siteOrigin}/${locale}/blog/`,
+  homeName: locale === "uk" ? "Головна" : "Home",
+  blogName: t("blog.heading", locale),
+  faq: entry.data.faq,
+});
 ---
 
 <BaseLayout
@@ -36,10 +88,13 @@ const feedHref = `/${locale}/blog/rss.xml`;
   title={title}
   description={description}
   pathSuffix={pathSuffix}
+  availableLocales={availableLocales}
   feedHref={feedHref}
   ogType="article"
+  ogImage={ogImage}
   publishedTime={entry.data.pubDate.toISOString()}
   modifiedTime={entry.data.updatedDate?.toISOString()}
+  jsonLd={jsonLd}
 >
   <SiteHeader locale={locale} />
   <main>
@@ -69,9 +124,44 @@ const feedHref = `/${locale}/blog/rss.xml`;
         <p class="post__lede">{entry.data.description}</p>
       </header>
 
+      {
+        toc.length > 1 && (
+          <nav class="toc" aria-labelledby="toc-label">
+            <p id="toc-label" class="toc__label">
+              {t("blog.onThisPage", locale)}
+            </p>
+            <ol class="toc__list">
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+
       <div class="prose">
         <Content />
       </div>
+
+      {
+        entry.data.faq && entry.data.faq.length > 0 && (
+          <section class="faq" aria-labelledby="faq-label">
+            <h2 id="faq-label" class="faq__label">
+              {t("blog.faq", locale)}
+            </h2>
+            <dl class="faq__list">
+              {entry.data.faq.map((item) => (
+                <div class="faq__item">
+                  <dt class="faq__q">{item.q}</dt>
+                  <dd class="faq__a">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )
+      }
 
       {
         entry.data.tags.length > 0 && (
@@ -83,6 +173,25 @@ const feedHref = `/${locale}/blog/rss.xml`;
               </a>
             ))}
           </footer>
+        )
+      }
+
+      {
+        related.length > 0 && (
+          <section class="related" aria-labelledby="related-label">
+            <h2 id="related-label" class="related__label">
+              {t("blog.related", locale)}
+            </h2>
+            <ul class="related__list">
+              {related.map((p) => (
+                <li>
+                  <a href={`/${locale}/blog/${postSlug(p.id)}/`}>
+                    {p.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
         )
       }
 

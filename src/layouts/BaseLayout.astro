@@ -10,6 +10,13 @@ interface Props {
   description: string;
   /** Path under /en/ or /uk/ excluding the locale prefix, e.g. "" or "about/". */
   pathSuffix?: string;
+  /**
+   * Locales in which THIS page actually exists. Defaults to both — correct for
+   * pages present in every locale (home, blog index, tag pages). Single-locale
+   * content (e.g. an untranslated blog post) must pass only the locales it has,
+   * so hreflang never advertises a 404 target and invalidates the cluster.
+   */
+  availableLocales?: Locale[];
   ogImage?: string;
   /** OpenGraph type — "website" (default) or "article" for blog posts. */
   ogType?: string;
@@ -18,6 +25,8 @@ interface Props {
   /** ISO timestamps for article OG metadata (emitted only when ogType="article"). */
   publishedTime?: string;
   modifiedTime?: string;
+  /** Extra JSON-LD payload (e.g. per-post BlogPosting + BreadcrumbList) to inline. */
+  jsonLd?: string;
 }
 
 const {
@@ -25,11 +34,13 @@ const {
   title,
   description,
   pathSuffix = "",
+  availableLocales = ["en", "uk"],
   ogImage,
   ogType = "website",
   feedHref,
   publishedTime,
   modifiedTime,
+  jsonLd,
 } = Astro.props;
 
 const htmlLang = locale === "uk" ? "uk-UA" : "en";
@@ -41,11 +52,19 @@ const siteOrigin = Astro.site
 const canonicalPath = `/${locale}/${pathSuffix}`;
 const canonicalUrl = `${siteOrigin}${canonicalPath}`;
 
-// hreflang alternates — every locale plus x-default mapped to en.
+// hreflang alternates — only the locales this page actually has, plus x-default.
+// Every entry must resolve to a real page: a 404 target (or a missing return
+// tag) invalidates the whole hreflang cluster. x-default points at en when
+// available, else the first locale present.
+const xDefaultLocale = availableLocales.includes("en")
+  ? "en"
+  : (availableLocales[0] ?? "en");
 const localeAlternates: Array<{ hreflang: string; href: string }> = [
-  { hreflang: "en", href: `${siteOrigin}/en/${pathSuffix}` },
-  { hreflang: "uk", href: `${siteOrigin}/uk/${pathSuffix}` },
-  { hreflang: "x-default", href: `${siteOrigin}/en/${pathSuffix}` },
+  ...availableLocales.map((loc) => ({
+    hreflang: loc,
+    href: `${siteOrigin}/${loc}/${pathSuffix}`,
+  })),
+  { hreflang: "x-default", href: `${siteOrigin}/${xDefaultLocale}/${pathSuffix}` },
 ];
 
 // Per-locale font subset. Latin (en) and Cyrillic-Ukrainian (uk) subsets are
@@ -132,6 +151,7 @@ const ogImageUrl = ogImage ?? `${siteOrigin}/og-default.png`;
     <meta name="twitter:image:alt" content="Roman Kocherezhchenko — AI-Enabled Engineer" />
 
     <script type="application/ld+json" set:html={PERSON_JSONLD} is:inline />
+    {jsonLd && <script type="application/ld+json" set:html={jsonLd} is:inline />}
   </head>
   <body>
     <slot />

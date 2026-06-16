@@ -56,3 +56,29 @@ export function formatDate(date: Date, locale: Locale): string {
     day: "numeric",
   }).format(date);
 }
+
+/**
+ * Up to `limit` other published posts in the same locale that share at least one
+ * tag with `post`, ranked by shared-tag count (then newest first). Build-time
+ * internal linking for the post footer — no client JS.
+ */
+export async function getRelatedPosts(
+  post: BlogPost,
+  locale: Locale,
+  limit = 3,
+): Promise<BlogPost[]> {
+  const tags = new Set(post.data.tags);
+  if (tags.size === 0) return [];
+  const posts = await getPosts(locale);
+  return posts
+    .filter((p) => p.id !== post.id)
+    .map((p) => ({ p, shared: p.data.tags.filter((t) => tags.has(t)).length }))
+    .filter((x) => x.shared > 0)
+    .sort(
+      (a, b) =>
+        b.shared - a.shared ||
+        b.p.data.pubDate.getTime() - a.p.data.pubDate.getTime(),
+    )
+    .slice(0, limit)
+    .map((x) => x.p);
+}

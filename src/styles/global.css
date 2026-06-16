@@ -1013,3 +1013,140 @@ footer.site-footer p {
 .prose .token.italic {
   font-style: italic;
 }
+
+/* ---- blog: table of contents -------------------------------------------- */
+
+.toc {
+  margin: clamp(2rem, 4vw, 2.75rem) 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+.toc__label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin: 0 0 0.6rem;
+}
+
+.toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.toc__list a {
+  color: var(--fg-2);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.toc__list a:hover,
+.toc__list a:focus-visible {
+  color: var(--accent-2);
+}
+
+/* ---- blog: heading permalinks ------------------------------------------- */
+
+.heading-anchor {
+  margin-left: 0.4em;
+  color: var(--fg-3);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.12s ease-in-out;
+}
+
+.heading-anchor::before {
+  content: "#";
+}
+
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* Touch devices have no hover — keep the anchors faintly visible. */
+@media (hover: none) {
+  .heading-anchor {
+    opacity: 0.45;
+  }
+}
+
+/* ---- blog: related posts ------------------------------------------------ */
+
+.faq {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.faq__label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin: 0 0 1.3rem;
+}
+
+.faq__list {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.faq__item {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.faq__q {
+  font-weight: 600;
+  color: var(--fg);
+  font-size: 1.05rem;
+}
+
+.faq__a {
+  margin: 0;
+  color: var(--fg-2);
+  line-height: 1.65;
+}
+
+.related {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.related__label {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin: 0 0 0.9rem;
+}
+
+.related__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.related__list a {
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 1.02rem;
+}
+
+.related__list a:hover,
+.related__list a:focus-visible {
+  color: var(--accent-2);
+}

@@ -39,6 +39,10 @@ const blog = defineCollection({
     // same tag existing in both locales (translated posts share identical tags).
     tags: z.array(z.string().regex(/^[a-z0-9-]+$/)).default([]),
     draft: z.boolean().default(false),
+    // Optional Q&A pairs. Rendered as a visible FAQ section AND emitted as
+    // FAQPage JSON-LD for answer-engine / AI-search extraction. Keep answers
+    // plain text (no markdown) so they serialize cleanly into structured data.
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
   }),
 });
 
