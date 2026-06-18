@@ -1,70 +1,74 @@
 ---
 brand_name: Roman Kocherezhchenko
 domain: roman-kocherezhchenko.com
-geo_score: 62
+geo_score: 59
 date: 2026-06-18
-audit_target: local build (dist/) + existing report
-previous_score: 51
+audit_target: live URL (https://roman-kocherezhchenko.com)
+baseline_score: 51
+local_estimate: 62
 ---
 
-# GEO Audit — roman-kocherezhchenko.com
+# GEO Audit (live) — roman-kocherezhchenko.com
 
-**Composite GEO Score: 62/100 — Fair (upper end)** &nbsp;·&nbsp; previous audit: 51/100
+**Composite GEO Score: 59/100 — Fair** &nbsp;·&nbsp; baseline: 51 &nbsp;·&nbsp; local-build estimate: 62
 
-| Category | Weight | Score | Weighted | Δ vs prev |
+| Category | Weight | Score | Weighted | Δ vs baseline |
 |---|---|---|---|---|
-| AI Citability & Visibility | 25% | 58 | 14.5 | +6 |
-| Brand Authority Signals | 20% | 24 | 4.8 | +16 |
+| AI Citability & Visibility | 25% | 55 | 13.75 | +3 |
+| Brand Authority Signals | 20% | 14 | 2.8 | +6 |
 | Content Quality & E-E-A-T | 20% | 73 | 14.6 | +15 |
 | Technical Foundations | 15% | 93 | 14.0 | +2 |
 | Structured Data | 10% | 86 | 8.6 | +28 |
-| Platform Optimization | 10% | 60 | 6.0 | +7 |
-| **Total** | | | **62** | **+11** |
+| Platform Optimization | 10% | 54 | 5.4 | +1 |
+| **Total** | | | **59** | **+8** |
 
-## The one-line diagnosis
+This is the live re-run the local audit asked for. It lands at **59, not the local-build estimate of 62** — the on-page work all verified, but the live searches show off-site Brand Authority is weaker than a local build could reveal. The local audit credited the published repo as an entity anchor; in reality it isn't indexed yet, and the project name **collides** with a well-known one.
 
-The previous audit's on-site action list is **done** — repo published and linked, entity graph expanded, author layer shipped, schema gaps closed — and the risp series grew 5 → 8 deep-dive posts. The score rose 51 → 62 almost entirely on in-repo work. What's left is off the domain: the entity still has **no Wikidata item and no third-party mentions**, which caps Brand Authority and the off-site-gated platforms. Content and schema are now solid; the remaining gap is off-domain visibility.
+## The finding the local audit couldn't see: a name collision
 
-## What changed since the last audit (verified in the build)
+Searching `risp Lisp Rust` / `risp beat CPython` surfaces **Stepan Parunashvili's "Risp (in (Rust) (Lisp))"** (2019, multiple Hacker News front pages, Medium) plus several other `risp` repos — never `kissishka/risp`. An AI asked about "risp" today resolves to *those*, not this project. This caps discoverability no matter how good the on-page content is, and it reframes the #1 off-site task from "get mentions" to "**disambiguate first, then get mentions**."
 
-- **Source repo is now an entity anchor.** Every post emits `isBasedOn` → `SoftwareSourceCode` pointing at `github.com/kissishka/risp`, and the repo is a real, indexable, AI-citable artifact. This was the #1 lever last time; it's now live.
-- **`sameAs` 1 → 3.** Telegram + **GitHub** + **LinkedIn** (`src/lib/jsonld.ts`). Feeds ChatGPT/Gemini/Bing/Perplexity entity resolution at once.
-- **Author identity shipped.** `/en/about` + `/uk/about` exist, and a visible **byline renders** on every post (was schema-only before). Person schema on home and About.
-- **Schema gaps closed.** `WebSite` schema present, `speakable` present, `FAQPage` on **all 8** risp posts, BreadcrumbList intact. The two named Schema gaps from last time are gone — this is the biggest single jump (+28).
-- **Series depth.** 3 new deep-dives — the **reader** (`writing-a-lisp-reader-in-rust`), **lexical scope** (`lexical-scope-in-a-rust-lisp`), and the **self-hosted prelude** (`risp-standard-library-in-lisp-not-rust`) — each bilingual, FAQ-backed, repo-linked, and listed in `llms.txt`.
-- **Minor nits fixed.** Homepage meta description now ~155 chars (was ~47); root `/` → `/en/` is now **301** (was 302).
+Live entity searches returned **zero** footprint for this project: no result for `"Roman Kocherezhchenko" risp`, no Wikidata/Wikipedia, no surfaced LinkedIn, and `kissishka/risp` not indexed in search despite being **public (HTTP 200)** and linked from every post.
 
-## What's still excellent (don't touch)
+## Verified live (deployed state matches the build)
 
-- **Technical: 93/100.** Full SSR, security headers, valid hreflang, per-post sitemap `lastmod`, 301 root, low CWV risk. Crawlers see everything; zero JS dependency.
-- **AI crawler access: 100/100.** Blanket `Allow: /` — every AI bot permitted; `llms.txt` curates the series for them.
-- **Blog citability ~84.** Answer-style intros, dense benchmark tables, on-page FAQ mirrored into `FAQPage` JSON-LD, source repo tied to every claim. Eight of these now, heavily cross-linked.
-- **Content craft.** Original benchmarks, named regressions, honest limits ("the one shape it couldn't win"). Genuine practitioner writing, verifiable against linked source.
+- **Schema served:** homepage JSON-LD returns `Person`, `WebSite`, and `sameAs` = Telegram + `github.com/kissishka` + LinkedIn. `FAQPage` + `isBasedOn` → `SoftwareSourceCode` on all 8 risp posts.
+- **All 8 posts + both locales return 200**, SSR, valid hreflang, per-post `lastmod`, 301 root. Crawlers see everything; zero JS dependency.
+- **`llms.txt` live** lists the full 8-post series.
+- **Repo is public and linked**, so the anchor exists — it just hasn't propagated into any index or third-party page.
+
+## Why each category moved (live vs local estimate)
+
+- **Brand Authority 24 → 14.** The local audit over-credited "repo published." Live: public + linked earns a little over the 8 baseline, but no indexing, no mentions, and the name collision hold it down hard.
+- **AI Visibility 58 → 55.** On-page citability is unchanged and strong; the *visibility* half is confirmed near-zero and actively suppressed by the collision.
+- **Platform 60 → 54.** Off-site-gated engines (Perplexity, Gemini) are confirmed gated by the absent footprint.
+- **Technical 93, Schema 86, E-E-A-T 73, on-page Citability** — all confirmed live, unchanged from the local audit.
 
 ## Prioritized action plan
 
-### Off-site — where the remaining ~25 points live (not code)
-1. **[CRITICAL] Seed community mentions.** Submit "beat CPython 3.14" + the Cranelift-JIT post to Hacker News, Lobsters, r/rust, r/ProgrammingLanguages. Now that the repo is public this is the largest unrealized lever: it moves Brand Authority 24 → 45+ and lifts Perplexity/Gemini/Bing together.
-2. **[HIGH] Create a Wikidata item** for the person + project. Most direct path into Google's Knowledge Graph and cross-model entity recognition. The GitHub + LinkedIn `sameAs` anchors are now in place to reconcile against.
-3. **[MEDIUM] Make the GitHub repo itself GEO-grade** — a README with a definitional opening line, the benchmark table, and links back to the posts. The repo is now cited *by* the site; make it cite back.
+### Off-site — where the remaining points are (not code)
+1. **[CRITICAL] Disambiguate the project.** This is now ahead of "seed mentions," because mentions of "risp" reinforce the *other* project. Options: sub-brand consistently (e.g. "risp by Roman Kocherezhchenko", or a distinct name like `risp-rs`), and lead every title/H1/share with unique long-tail framing — "zero-dependency three-engine Lisp (tree-walker + bytecode VM + Cranelift JIT) in Rust, beats CPython 3.14." Own phrases the 2019 project can't.
+2. **[CRITICAL] Then seed mentions** with that disambiguated framing + the repo link: Hacker News, Lobsters, r/rust, r/ProgrammingLanguages. Each mention must tie to `kissishka/risp` so the entity graph resolves to *this* risp.
+3. **[HIGH] Wikidata item** for person + project, reconciled against the GitHub + LinkedIn `sameAs` anchors already live in the schema.
+4. **[MEDIUM] Make the repo discoverable** — README with the definitional line + benchmark table + back-links to the posts, GitHub topics, so `kissishka/risp` starts indexing.
 
 ### On-site — small, cheap, remaining
-4. **[HIGH] Add a "What is risp?" definitional block to the homepage.** The home URL is still ~22 citability (risp appears only in the meta description, not an extractable on-page Q&A). One answer-style block makes the canonical URL itself AI-quotable.
-5. **[MEDIUM] Deepen the About page.** It exists but is ~184 words with no explicit credentials. A short "experience / what I've built / how to verify" section converts identity into E-E-A-T authoritativeness (the sub-score still dragging Content).
-6. **[LOW] Generate `/llms-full.txt`** (full-text companion to `llms.txt`), add `Content-Signal:` to robots.txt, and confirm Bing Webmaster + IndexNow on Cloudflare for instant recrawl on deploy.
+5. **[HIGH] "What is risp?" homepage block** — the home URL is still ~22 citability (risp appears only in the meta description). One answer-style block, using the disambiguated framing, makes the canonical URL AI-quotable.
+6. **[MEDIUM] Deepen the About page** (~184 words, no explicit credentials) to convert identity into E-E-A-T authoritativeness.
+7. **[LOW] `/llms-full.txt`**, `Content-Signal:` in robots.txt, Bing Webmaster + IndexNow on Cloudflare.
 
 ## Per-category scores
 
 | Category | Score | Headline |
 |---|---|---|
-| AI Visibility | 58 | On-page citability high across 8 posts; homepage block + off-site mentions are the cap |
-| Brand Authority | 24 | Repo + 2 new `sameAs` anchors raise it from baseline; no Wikidata / mentions yet |
-| Content E-E-A-T | 73 | Content 80+, author layer now real; thin About bio is the remaining drag |
-| Technical | 93 | No critical issues; 301 + per-post lastmod tidy the last nits |
-| Schema | 86 | `WebSite` + `speakable` + `sameAs`×3 + `FAQPage`×8 + `isBasedOn` — gaps closed |
-| Platform (avg) | 60 | AIO strongest; Perplexity/Gemini still gated by off-site footprint |
+| AI Visibility | 55 | On-page citability high across 8 posts; near-zero discovery + name collision are the cap |
+| Brand Authority | 14 | Repo public + `sameAs`×3 live, but not indexed, no mentions, name collides with the 2019 "risp" |
+| Content E-E-A-T | 73 | Content 80+, author layer live; thin About bio is the remaining drag |
+| Technical | 93 | Confirmed live: 200s, SSR, schema served, 301 root, per-post lastmod |
+| Schema | 86 | Live: `Person` + `WebSite` + `sameAs`×3 + `FAQPage`×8 + `isBasedOn` |
+| Platform (avg) | 54 | AIO strongest; Perplexity/Gemini gated by the absent off-site footprint |
 
-**Bottom line:** The in-repo build is now in good shape — schema, author identity, and content all moved up, and the source repo is wired through everything. The score is capped, as before, by what isn't on the domain: get the posts cited somewhere AI models read (HN/Reddit/Lobsters) and stand up a Wikidata item, and 62 → 75 (Good) is reachable without touching the code. The only on-site points left are the homepage definitional block and a deeper About bio.
+**Bottom line:** The site improved for real over the 51 baseline (+8 live), led by schema and the author layer — all confirmed serving in production. The live run corrects one optimistic call: the published repo isn't an entity anchor *yet*, because it isn't indexed and the name "risp" resolves to a different, well-known project. The path to "Good" (75) runs through **disambiguation first**, then mentions and Wikidata — none of it code.
 
 ---
-<sub>Audit scope: local production build in `dist/` (the 3 new posts are not yet deployed) plus the prior report. Brand-authority off-site signals (Wikidata, HN/Reddit/Lobsters mentions) are assessed as unchanged from baseline — they can't be verified from a local build; only the in-build GitHub anchor is confirmed present. Re-run against the live URL after deploy to validate off-site movement.</sub>
+<sub>Audit scope: live production URL (`https://roman-kocherezhchenko.com`), schema confirmed via direct HTML fetch (WebFetch's markdown view strips JSON-LD). Off-site signals checked via web search + GitHub/HN reachability on 2026-06-18; "no footprint" reflects what was indexed at audit time and should improve as the repo and posts propagate. Supersedes the local-build estimate of 62.</sub>
