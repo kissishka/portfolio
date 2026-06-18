@@ -1,4 +1,5 @@
 // @ts-check
+import { readFileSync, readdirSync } from "node:fs";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
@@ -54,6 +55,29 @@ function rehypeHeadingAnchors() {
 /** @type {`sha256-${string}`[]} */
 const SCRIPT_HASHES = ["sha256-gVXDeYnhFIMjrrZccWUk3Va1INMnDo7pE64oFEmkEuo=", "sha256-vCjPtM7wROwtuzNZfQnx90sgST6SziuhGtU7vyXTF0o="];
 
+// Per-post <lastmod> for the sitemap. The sitemap integration only sees URLs,
+// not collection data, so we read blog frontmatter here at build time and map
+// each post path to its updatedDate (falling back to pubDate). Only posts get a
+// lastmod — they're the pages that actually change; index/tag/home are left bare
+// rather than stamped with a meaningless build date.
+// ponytail: regex frontmatter parse over our own controlled content; swap for a
+// real YAML parser only if posts ever grow exotic date formatting.
+const BLOG_LASTMOD = new Map();
+for (const locale of ["en", "uk"]) {
+  const dir = new URL(`./src/content/blog/${locale}/`, import.meta.url);
+  for (const file of readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    const fm = readFileSync(new URL(file, dir), "utf8").split("\n---", 1)[0];
+    const raw = (fm.match(/^updatedDate:\s*(.+)$/m) ?? fm.match(/^pubDate:\s*(.+)$/m))?.[1]
+      ?.trim()
+      .replace(/^["']|["']$/g, "");
+    if (raw) {
+      const slug = file.replace(/\.md$/, "");
+      BLOG_LASTMOD.set(`/${locale}/blog/${slug}/`, new Date(raw).toISOString());
+    }
+  }
+}
+
 export default defineConfig({
   site: "https://roman-kocherezhchenko.com",
   trailingSlash: "always",
@@ -90,6 +114,11 @@ export default defineConfig({
     sitemap({
       // RSS endpoints are feeds, not indexable pages — keep them out of the sitemap.
       filter: (page) => !page.includes("/blog/rss.xml"),
+      serialize(item) {
+        const lastmod = BLOG_LASTMOD.get(new URL(item.url).pathname);
+        if (lastmod) item.lastmod = lastmod;
+        return item;
+      },
     }),
   ],
   image: {
