@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import Contact from "../../components/Contact.astro";
+import { isLocale, t } from "../../lib/t";
+import { TELEGRAM_HANDLE, EMAIL } from "../../lib/contact";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "uk" } }];
+}
+
+const { locale: localeParam } = Astro.params;
+if (!isLocale(localeParam)) throw new Error(`Unknown locale: ${localeParam}`);
+const locale = localeParam;
+
+// Bio is mined from the site's own demonstrable work (the risp series, the
+// home/contact copy) — no claims the rest of the site can't back up.
+const bio: Record<typeof locale, string[]> = {
+  en: [
+    "Roman Kocherezhchenko is an AI-Enabled Engineer — he designs, builds, and ships software by pairing with coding agents, then writes about the systems work underneath.",
+    "His current focus is risp, a small, zero-dependency Lisp interpreter written in Rust: a tree-walking evaluator, a bytecode VM that beats CPython 3.14 on arithmetic and loops, and an optional Cranelift JIT that runs 10–23× faster than CPython. A five-part series documents the work, from a no-stack-overflow CEK evaluator to macros and quasiquote.",
+    "The throughline is a discipline for keeping AI-written systems code honest: a reference interpreter as an oracle, differential testing that asserts byte-identical results, and a no-panic error contract. He holds the invariants, the agent supplies the throughput, and the tests arbitrate.",
+    "Beyond interpreters, he builds fast static sites, Telegram bots that do real work, and edge deploys on Cloudflare.",
+  ],
+  uk: [
+    "Роман Кочережченко — інженер, що працює з AI: він проєктує, будує та запускає програмне забезпечення в парі з кодувальними агентами, а потім пише про системну роботу, що стоїть за цим.",
+    "Зараз у фокусі — risp, невеликий інтерпретатор Lisp без залежностей, написаний на Rust: деревний обхідник, байткодова віртуальна машина, що випереджає CPython 3.14 на арифметиці й циклах, та опційний Cranelift JIT, який працює у 10–23 рази швидше за CPython. Робота описана в серії з п'яти частин — від CEK-обчислювача без переповнення стека до макросів і квазіцитування.",
+    "Наскрізна ідея — дисципліна, що тримає згенерований AI системний код чесним: еталонний інтерпретатор як оракул, диференційне тестування з перевіркою на побайтову ідентичність і контракт помилок без паніки. Він тримає інваріанти, агент дає пропускну здатність, а тести виносять вердикт.",
+    "Окрім інтерпретаторів, він робить швидкі статичні сайти, Telegram-боти, що виконують реальну роботу, та edge-деплої на Cloudflare.",
+  ],
+};
+---
+
+<BaseLayout
+  locale={locale}
+  title={t("about.title", locale)}
+  description={t("meta.description", locale)}
+  pathSuffix="about/"
+>
+  <SiteHeader locale={locale} />
+  <main>
+    <article class="post">
+      <header class="post__header">
+        <h1 class="post__title">{t("about.heading", locale)}</h1>
+      </header>
+      <div class="prose">
+        {bio[locale].map((p) => <p>{p}</p>)}
+      </div>
+    </article>
+    <Contact locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>

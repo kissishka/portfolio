@@ -3,7 +3,7 @@
 //
 // Note: this string is what we inline verbatim. Whitespace MATTERS for the
 // CSP hash — keep it exactly as exported.
-export const PERSON_JSONLD = `{"@context":"https://schema.org","@type":"Person","name":"Roman Kocherezhchenko","jobTitle":"AI-Enabled Engineer","url":"https://roman-kocherezhchenko.com","sameAs":["https://t.me/roman_kocherezhchenko"]}`;
+export const PERSON_JSONLD = `{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Roman Kocherezhchenko","jobTitle":"AI-Enabled Engineer","url":"https://roman-kocherezhchenko.com","sameAs":["https://t.me/roman_kocherezhchenko","https://github.com/kissishka","https://www.linkedin.com/in/roman-kocherezhchenko-is-the-best-developer/"]},{"@type":"WebSite","name":"Roman Kocherezhchenko","alternateName":"Roman Kocherezhchenko — AI-Enabled Engineer","url":"https://roman-kocherezhchenko.com","inLanguage":["en","uk"],"publisher":{"@type":"Person","name":"Roman Kocherezhchenko","url":"https://roman-kocherezhchenko.com"}}]}`;
 
 export interface BlogPostingInput {
   title: string;
@@ -37,6 +37,11 @@ export function blogPostingJsonLd(input: BlogPostingInput): string {
     "@type": "Person",
     name: "Roman Kocherezhchenko",
     url: input.origin,
+    sameAs: [
+      "https://t.me/roman_kocherezhchenko",
+      "https://github.com/kissishka",
+      "https://www.linkedin.com/in/roman-kocherezhchenko-is-the-best-developer/",
+    ],
   };
   const nodes: Record<string, unknown>[] = [
     {
@@ -50,6 +55,10 @@ export function blogPostingJsonLd(input: BlogPostingInput): string {
       dateModified: input.dateModified ?? input.datePublished,
       inLanguage: input.locale === "uk" ? "uk-UA" : "en",
       keywords: input.tags.join(", "),
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: ["h1", ".post__lede", ".faq"],
+      },
       author,
       publisher: author,
     },

@@ -101,6 +101,8 @@ const jsonLd = blogPostingJsonLd({
     <article class="post">
       <header class="post__header">
         <p class="post__meta">
+          <a class="post__author" rel="author" href={`/${locale}/about/`}>{t("hero.kicker", locale)}</a>
+          <span aria-hidden="true"> · </span>
           <time datetime={entry.data.pubDate.toISOString()}>
             {formatDate(entry.data.pubDate, locale)}
           </time>

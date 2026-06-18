@@ -1,7 +1,7 @@
 {
   "hero.kicker": "Roman Kocherezhchenko",
   "hero.headline": "AI-Enabled Engineer",
-  "meta.description": "Roman Kocherezhchenko — an AI-Enabled engineer.",
+  "meta.description": "Roman Kocherezhchenko — AI-Enabled engineer shipping fast static sites, Telegram bots, and edge deploys, and writing deep notes on systems work like risp, a Lisp interpreter in Rust.",
   "contact.heading": "Get in touch",
   "contact.body": "Telegram is the fastest way to reach me — email works too.",
   "contact.cta.telegram": "Open Telegram",
@@ -10,6 +10,9 @@
   "theme.toggle": "Toggle theme",
   "nav.label": "Primary",
   "nav.blog": "Blog",
+  "nav.about": "About",
+  "about.title": "About — Roman Kocherezhchenko",
+  "about.heading": "About",
   "blog.heading": "Blog",
   "blog.intro": "Notes on building and shipping software — performance, deploys, and small automations.",
   "blog.empty": "No posts yet. Check back soon.",
