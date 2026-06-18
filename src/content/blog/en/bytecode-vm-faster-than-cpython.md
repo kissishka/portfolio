@@ -3,6 +3,7 @@ title: "How a bytecode VM in Rust beat CPython 3.14"
 description: "Eleven profile-guided steps with real Rust: lexical-addressed locals, unboxed i64 arithmetic, an unsafe hot loop, and self-tail-calls in place — taking a tree-walking Lisp from 1682 ms to 95 ms on fib(30) and past CPython on every loop."
 pubDate: 2026-06-12
 tags: ["rust", "performance", "compilers"]
+repo: "https://github.com/kissishka/risp"
 faq:
   - q: "Can a bytecode interpreter written in Rust beat CPython?"
     a: "Yes. risp's bytecode VM computes fib(30) in 95 ms versus its tree-walker's 1682 ms, and it beats CPython 3.14 on arithmetic (78 vs 96 ms) and tail-recursive loops (25 vs 31 ms). It trails CPython only on call-bound recursion like fib."

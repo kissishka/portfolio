@@ -3,6 +3,7 @@ title: "Designing a Lisp interpreter in Rust with no stack overflows"
 description: "A deep dive into risp's iterative core — the Value enum, a hand-written iterative Drop, and an explicit-stack CEK evaluator that read, print, compare, free, and evaluate a million-deep structure without overflowing the Rust stack."
 pubDate: 2026-06-11
 tags: ["rust", "interpreters", "lisp"]
+repo: "https://github.com/kissishka/risp"
 faq:
   - q: "How do you stop a tree-walking interpreter from overflowing the stack?"
     a: "Turn every recursive walk over user data into an explicit-stack loop. risp uses an iterative CEK evaluator, a hand-written iterative Drop, and loop-based printing and equality, so the Rust call stack stays a few frames deep no matter how deep the input goes."

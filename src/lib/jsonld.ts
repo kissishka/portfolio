@@ -13,6 +13,8 @@ export interface BlogPostingInput {
   image?: string;
   datePublished: string;
   dateModified?: string;
+  /** Optional source-repository URL, emitted as a SoftwareSourceCode isBasedOn. */
+  repo?: string;
   tags: string[];
   locale: "en" | "uk";
   origin: string;
@@ -59,6 +61,16 @@ export function blogPostingJsonLd(input: BlogPostingInput): string {
         "@type": "SpeakableSpecification",
         cssSelector: ["h1", ".post__lede", ".faq"],
       },
+      ...(input.repo
+        ? {
+            isBasedOn: {
+              "@type": "SoftwareSourceCode",
+              name: "risp",
+              codeRepository: input.repo,
+              programmingLanguage: "Rust",
+            },
+          }
+        : {}),
       author,
       publisher: author,
     },

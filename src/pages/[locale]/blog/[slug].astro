@@ -73,6 +73,7 @@ const jsonLd = blogPostingJsonLd({
   image: ogImage ?? `${siteOrigin}/og-default.png`,
   datePublished: entry.data.pubDate.toISOString(),
   dateModified: entry.data.updatedDate?.toISOString(),
+  repo: entry.data.repo,
   tags: entry.data.tags,
   locale,
   origin: siteOrigin,
@@ -124,6 +125,16 @@ const jsonLd = blogPostingJsonLd({
         </p>
         <h1 class="post__title">{entry.data.title}</h1>
         <p class="post__lede">{entry.data.description}</p>
+        {
+          entry.data.repo && (
+            <p class="post__source">
+              {t("blog.source", locale)}:{" "}
+              <a href={entry.data.repo} rel="noopener">
+                {entry.data.repo.replace(/^https?:\/\//, "")}
+              </a>
+            </p>
+          )
+        }
       </header>
 
       {

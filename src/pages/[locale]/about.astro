@@ -46,6 +46,12 @@ const bio: Record<typeof locale, string[]> = {
       </header>
       <div class="prose">
         {bio[locale].map((p) => <p>{p}</p>)}
+        <p class="post__source">
+          {t("blog.source", locale)}:{" "}
+          <a href="https://github.com/kissishka/risp" rel="noopener">
+            github.com/kissishka/risp
+          </a>
+        </p>
       </div>
     </article>
     <Contact locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />

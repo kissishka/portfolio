@@ -3,6 +3,7 @@ title: "Adding a Cranelift JIT that runs 10–23× faster than CPython"
 description: "A deep dive into risp's opt-in Cranelift JIT in Rust: a decline-don't-guess type checker, lowering if/cond/let to Cranelift IR, inline signed-overflow detection, tail-calls as loop back-edges, and a deopt guard — beating CPython by 10× to 42×."
 pubDate: 2026-06-13
 tags: ["rust", "performance", "jit"]
+repo: "https://github.com/kissishka/risp"
 faq:
   - q: "How much faster than CPython is a Cranelift JIT for a Lisp?"
     a: "risp's opt-in Cranelift JIT runs fib about 10x faster than CPython 3.14 (6.3 ms vs 61 ms), a tail-sum loop 13x, an arithmetic loop 23x, and a control-flow-dense dispatch loop about 42x (5 ms vs 208 ms)."

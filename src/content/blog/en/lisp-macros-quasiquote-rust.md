@@ -3,6 +3,7 @@ title: "Macros and quasiquote: code that writes code in risp"
 description: "A deep dive into risp's macro system in Rust — how defmacro, demand-driven expansion, the quasiquote engine, and gensym let a Lisp grow control structures like while and unless that no function can express."
 pubDate: 2026-06-10
 tags: ["lisp", "macros", "interpreters"]
+repo: "https://github.com/kissishka/risp"
 faq:
   - q: "Why can't Lisp macros be regular functions?"
     a: "A function evaluates all its arguments before its body runs, so it cannot decide whether code runs or invent new control structures. Written as a function, (unless cold (wear-coat)) would always call wear-coat. Macros transform code before evaluation, so they can add control structures like while and unless."

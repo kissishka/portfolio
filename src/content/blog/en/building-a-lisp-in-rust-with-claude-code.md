@@ -3,6 +3,7 @@ title: "Building a Lisp interpreter in Rust with Claude Code"
 description: "How I built risp — a zero-dependency Lisp in Rust with a tree-walker, a bytecode VM, and a Cranelift JIT — pairing with Claude Code, and the differential-testing discipline that keeps AI-written systems code honest."
 pubDate: 2026-06-16
 tags: ["rust", "lisp", "claude-code"]
+repo: "https://github.com/kissishka/risp"
 faq:
   - q: "What is risp?"
     a: "risp is a small Lisp interpreter written in Rust with zero dependencies in its default build. It has three execution engines (a tree-walker, a bytecode VM, and an optional Cranelift JIT) that share one evaluator, environment, and standard library. It was built by pairing with Claude Code."
