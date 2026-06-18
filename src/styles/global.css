@@ -789,6 +789,23 @@ footer.site-footer p {
   color: var(--fg);
 }
 
+.post__badge {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--fg-2);
+}
+
+.post__badge a {
+  color: var(--fg-2);
+}
+
+.post__badge a:hover,
+.post__badge a:focus-visible {
+  color: var(--fg);
+}
+
 /* ---- blog: prose (rendered markdown) ------------------------------------ */
 
 .prose {

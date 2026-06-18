@@ -211,6 +211,11 @@ const jsonLd = blogPostingJsonLd({
       <p class="post__back">
         <a href={`/${locale}/blog/`}>{t("blog.back", locale)}</a>
       </p>
+
+      <p class="post__badge">
+        {t("blog.generatedWith", locale)}{" "}
+        <a href="https://claude.com/claude-code" rel="noopener">Claude Code</a>
+      </p>
     </article>
   </main>
   <SiteFooter locale={locale} />
