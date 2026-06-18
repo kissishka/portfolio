@@ -2,7 +2,7 @@
 
 > AI-Enabled Engineer. I design, build, and ship software — fast static sites, Telegram bots, edge deploys — and write deep technical notes on the systems work behind them. Contact: https://t.me/roman_kocherezhchenko
 
-The site is bilingual (English and Ukrainian); the English pages below are canonical. The flagship writing is a series on **risp**, a small, zero-dependency Lisp interpreter written in Rust (a tree-walker, a bytecode VM, and an optional Cranelift JIT), built by pairing with Claude Code.
+The site is bilingual (English and Ukrainian); the English pages below are canonical. The flagship writing is a series on **risp**, a small, zero-dependency Lisp interpreter written in Rust (a tree-walker, a bytecode VM, and an optional Cranelift JIT) — not the 2019 "Risp (in (Rust) (Lisp))" tutorial of the same name — built by pairing with Claude Code.
 
 ## risp — a Lisp interpreter in Rust
 
@@ -15,6 +15,11 @@ The site is bilingual (English and Ukrainian); the English pages below are canon
 - [Writing a Lisp reader in Rust: from text to a Value tree](https://roman-kocherezhchenko.com/en/blog/writing-a-lisp-reader-in-rust/): The reader — a Lisp-agnostic tokenizer, an iterative explicit-stack parser that can't overflow on deep nesting, reader-macro desugaring (`'x` → `(quote x)`), dotted-pair handling, and an atom classifier that declines ambiguous numbers instead of guessing.
 - [Lexical scope in a Rust Lisp: environments, closures, and a two-path drop](https://roman-kocherezhchenko.com/en/blog/lexical-scope-in-a-rust-lisp/): The scope model — an `Rc<RefCell<Environment>>` chain, iterative lookup and `set!`, closures that capture frames by reference (`child(&c.env)`), and a fast/slow `Drop` that frees a million-deep scope chain without recursing or allocating on the hot path.
 - [Why risp's standard library is written in risp, not Rust](https://roman-kocherezhchenko.com/en/blog/risp-standard-library-in-lisp-not-rust/): The native/Lisp boundary — a flat table of std-only builtins, an int-preserving numeric tower, and why `map`/`filter`/`fold` live in a risp prelude: a native higher-order builtin would re-enter the evaluator on the host stack and could overflow.
+- [Why a native-compiling Lisp loses to CPython on `map`](https://roman-kocherezhchenko.com/en/blog/why-cpython-beats-a-native-compiling-lisp/): risp's JIT beats CPython 3.14 by 9–40× on integer benchmarks yet loses 3× on `map`+`fold` — because the bottleneck is ~400,000 `Rc<Pair>` cons-cell allocations, not interpreter dispatch, so the integer JIT correctly emits no machine code for boxed-value list traversal.
+- [Fusing map, filter, and fold so a Lisp pipeline allocates once](https://roman-kocherezhchenko.com/en/blog/fusing-map-filter-fold-into-one-pass/): Transducers drive intermediate allocation from O(n) to O(1) but still lose on the per-element closure call; a monomorphizing `sum-of` macro lowers a `map`/`filter` pipeline to a native `i64` loop the existing JIT compiles — 4 ms vs CPython's 24 ms.
+- [Writing an HTTP/1.1 client and server in a zero-dependency Lisp](https://roman-kocherezhchenko.com/en/blog/http-server-in-a-zero-dependency-lisp/): Two new `Value` variants (a `Bytes` buffer and an opaque TCP socket) and about twenty `std::net` socket, bytes, and string builtins — with every byte of HTTP logic written in risp itself, so a default `cargo build` still resolves zero crates.
+- [Production-hardening a hobby Lisp's HTTP stack](https://roman-kocherezhchenko.com/en/blog/hardening-a-hobby-interpreters-http-stack/): TLS gated behind a `--features tls` Cargo flag (rustls), `try`/`catch` as a 30-line builtin, and a quadratic byte-buffer read loop replaced by a linear Rust primitive.
+- [Learning Rust by reading a real Lisp interpreter](https://roman-kocherezhchenko.com/en/blog/learn-rust-by-reading-a-lisp-interpreter/): The repo's `learn/` directory turns the working codebase into a Rust course — an easy-to-hard file reading order from `error.rs` to `eval.rs`, plus a set of concept lessons each anchored to a real file-and-line pointer.
 
 ## Writing on GEO & SEO — optimizing this site for AI search
 
