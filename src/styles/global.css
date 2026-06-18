@@ -1245,3 +1245,191 @@ footer.site-footer p {
 .related__list a:focus-visible {
   color: var(--accent-2);
 }
+
+/* ---- site search (⌘K) --------------------------------------------------- */
+
+/* Button-only enhancement: hidden until scripting is available (search needs JS). */
+.search-open {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root[data-js] .search-open {
+  display: inline-flex;
+}
+
+@media (pointer: coarse) {
+  .search-open {
+    height: 2.75rem;
+  }
+}
+
+.search-open:hover,
+.search-open:focus-visible {
+  color: var(--fg);
+  border-color: var(--fg-2);
+}
+
+.search-open:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.search-open .icon {
+  display: block;
+}
+
+.search-open__hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0.2em 0.4em;
+  border: 1px solid var(--border-2);
+  border-radius: 5px;
+  color: var(--fg-3);
+}
+
+/* No physical keyboard -> the shortcut hint is noise. */
+@media (pointer: coarse) {
+  .search-open__hint {
+    display: none;
+  }
+}
+
+.search {
+  width: min(100% - 2rem, 40rem);
+  max-height: min(80vh, 44rem);
+  margin: 12vh auto auto;
+  padding: 0;
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--fg);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.4);
+}
+
+/* Flex column so the results pane scrolls while the input stays pinned. */
+.search[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.search::backdrop {
+  background: rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.search__box {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-2);
+}
+
+.search__box .icon {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.search__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.search__input:focus {
+  outline: none;
+}
+
+.search__input::-webkit-search-decoration,
+.search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.search__esc {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--fg-3);
+  border: 1px solid var(--border-2);
+  border-radius: 5px;
+  padding: 0.2em 0.4em;
+}
+
+.search__results {
+  flex: 0 1 auto;
+  min-height: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+}
+
+/* Empty list collapses so an untyped dialog is just the search box. */
+.search__results:empty {
+  display: none;
+}
+
+.search__hit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--fg);
+}
+
+.search__hit:hover,
+.search__results li[aria-selected="true"] .search__hit {
+  background: var(--bg);
+}
+
+.search__results li[aria-selected="true"] .search__hit {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.search__hit-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.search__hit-snippet {
+  font-size: 0.82rem;
+  color: var(--fg-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search mark {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.search__empty {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 1.25rem 1rem 1.5rem;
+  color: var(--fg-2);
+  font-size: 0.9rem;
+  text-align: center;
+}

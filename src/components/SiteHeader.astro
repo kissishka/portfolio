@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
 import LangSwitcher from "./LangSwitcher.astro";
+import SiteSearch from "./SiteSearch.astro";
 import { t } from "../lib/t";
 import type { Locale } from "../lib/t";
 
@@ -27,6 +28,7 @@ const homeLabel =
     <a href={`/${locale}/about/`}>{t("nav.about", locale)}</a>
   </nav>
   <div class="site-header__controls">
+    <SiteSearch locale={locale} />
     <ThemeToggle locale={locale} />
     {langSwitcher && <LangSwitcher currentLocale={locale} />}
   </div>
