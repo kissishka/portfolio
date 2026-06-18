@@ -771,6 +771,11 @@ footer.site-footer p {
   font-variant-numeric: tabular-nums;
 }
 
+.post__meta .badge {
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
 .post__title {
   font-size: clamp(2rem, 4.5vw, 3rem);
   letter-spacing: -0.03em;
@@ -815,23 +820,6 @@ footer.site-footer p {
 
 .post__back a:hover,
 .post__back a:focus-visible {
-  color: var(--fg);
-}
-
-.post__badge {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.85rem;
-  color: var(--fg-2);
-}
-
-.post__badge a {
-  color: var(--fg-2);
-}
-
-.post__badge a:hover,
-.post__badge a:focus-visible {
   color: var(--fg);
 }
 

@@ -102,6 +102,7 @@ const jsonLd = blogPostingJsonLd({
     <article class="post">
       <header class="post__header">
         <p class="post__meta">
+          <span class="badge">{t("blog.aiGenerated", locale)}</span>
           <a class="post__author" rel="author" href={`/${locale}/about/`}>{t("hero.kicker", locale)}</a>
           <span aria-hidden="true"> · </span>
           <time datetime={entry.data.pubDate.toISOString()}>
@@ -210,11 +211,6 @@ const jsonLd = blogPostingJsonLd({
 
       <p class="post__back">
         <a href={`/${locale}/blog/`}>{t("blog.back", locale)}</a>
-      </p>
-
-      <p class="post__badge">
-        {t("blog.generatedWith", locale)}{" "}
-        <a href="https://claude.com/claude-code" rel="noopener">Claude Code</a>
       </p>
     </article>
   </main>
