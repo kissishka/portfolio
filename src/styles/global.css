@@ -997,7 +997,7 @@ footer.site-footer p {
   border: 1px solid var(--code-border);
   border-radius: var(--radius);
   padding: 1rem 1.15rem;
-  margin: 0;
+  margin: 1.5rem 0;
   overflow-x: auto;
   tab-size: 2;
   color: var(--code-fg);
