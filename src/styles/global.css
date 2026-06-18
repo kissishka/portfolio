@@ -29,8 +29,8 @@
   --fg: #e8eaed;
   --fg-2: #9aa3ad;
   --fg-3: #6b7480;
-  --accent: #9db2c9;
-  --accent-2: #c2cedb;
+  --accent: #e0a36b;
+  --accent-2: #eebd92;
   --border: #23282e;
   --border-2: #333a42;
   --btn-bg: #f2f4f7;
@@ -128,6 +128,28 @@ a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 3px;
+}
+
+/* ---- monospace metadata ------------------------------------------------- */
+
+/* Small labels, indices, dates, prices, and tags take the mono face for a quiet
+   developer texture — a free signature, since the mono stack already ships for
+   code. Inter still carries every bit of body copy and every heading; mono only
+   ever touches short non-prose metadata, so readability is untouched. */
+.hero .kicker,
+.service__index,
+.service__price,
+.service__price-label,
+.badge,
+.tag,
+.post__meta,
+.post-item__meta,
+.post__tags-label,
+.toc__label,
+.faq__label,
+.related__label,
+.blog-index .kicker a {
+  font-family: var(--font-mono);
 }
 
 /* ---- header / footer ---------------------------------------------------- */
@@ -454,8 +476,8 @@ footer.site-footer p {
     --fg: #15181b;
     --fg-2: #565d66;
     --fg-3: #6b727b;
-    --accent: #3b4654;
-    --accent-2: #1f2731;
+    --accent: #9a5b1e;
+    --accent-2: #7c4715;
     --border: #e4e7ea;
     --border-2: #d2d7dc;
     --btn-bg: #15181b;
@@ -471,8 +493,8 @@ footer.site-footer p {
   --fg: #15181b;
   --fg-2: #565d66;
   --fg-3: #6b727b;
-  --accent: #3b4654;
-  --accent-2: #1f2731;
+  --accent: #9a5b1e;
+  --accent-2: #7c4715;
   --border: #e4e7ea;
   --border-2: #d2d7dc;
   --btn-bg: #15181b;
