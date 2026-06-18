@@ -19,13 +19,13 @@ const locale = localeParam;
 const bio: Record<typeof locale, string[]> = {
   en: [
     "Roman Kocherezhchenko is an AI-Enabled Engineer — he designs, builds, and ships software by pairing with coding agents, then writes about the systems work underneath.",
-    "His current focus is risp, a small, zero-dependency Lisp interpreter written in Rust: a tree-walking evaluator, a bytecode VM that beats CPython 3.14 on arithmetic and loops, and an optional Cranelift JIT that runs 10–23× faster than CPython. A five-part series documents the work, from a no-stack-overflow CEK evaluator to macros and quasiquote.",
+    "His current focus is risp, a small, zero-dependency Lisp interpreter written in Rust: a tree-walking evaluator, a bytecode VM that beats CPython 3.14 on arithmetic and loops, and an optional Cranelift JIT that runs 10–23× faster than CPython. An eight-part series documents the work — from the reader and a no-stack-overflow CEK evaluator to macros, quasiquote, and a self-hosted standard library.",
     "The throughline is a discipline for keeping AI-written systems code honest: a reference interpreter as an oracle, differential testing that asserts byte-identical results, and a no-panic error contract. He holds the invariants, the agent supplies the throughput, and the tests arbitrate.",
     "Beyond interpreters, he builds fast static sites, Telegram bots that do real work, and edge deploys on Cloudflare.",
   ],
   uk: [
     "Роман Кочережченко — інженер, що працює з AI: він проєктує, будує та запускає програмне забезпечення в парі з кодувальними агентами, а потім пише про системну роботу, що стоїть за цим.",
-    "Зараз у фокусі — risp, невеликий інтерпретатор Lisp без залежностей, написаний на Rust: деревний обхідник, байткодова віртуальна машина, що випереджає CPython 3.14 на арифметиці й циклах, та опційний Cranelift JIT, який працює у 10–23 рази швидше за CPython. Робота описана в серії з п'яти частин — від CEK-обчислювача без переповнення стека до макросів і квазіцитування.",
+    "Зараз у фокусі — risp, невеликий інтерпретатор Lisp без залежностей, написаний на Rust: деревний обхідник, байткодова віртуальна машина, що випереджає CPython 3.14 на арифметиці й циклах, та опційний Cranelift JIT, який працює у 10–23 рази швидше за CPython. Робота описана в серії з восьми частин — від читача та CEK-обчислювача без переповнення стека до макросів, квазіцитування та власної стандартної бібліотеки.",
     "Наскрізна ідея — дисципліна, що тримає згенерований AI системний код чесним: еталонний інтерпретатор як оракул, диференційне тестування з перевіркою на побайтову ідентичність і контракт помилок без паніки. Він тримає інваріанти, агент дає пропускну здатність, а тести виносять вердикт.",
     "Окрім інтерпретаторів, він робить швидкі статичні сайти, Telegram-боти, що виконують реальну роботу, та edge-деплої на Cloudflare.",
   ],

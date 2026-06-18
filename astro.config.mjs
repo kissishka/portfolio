@@ -53,7 +53,7 @@ function rehypeHeadingAnchors() {
 // `SCRIPT_HASHES` const below. Rerun after editing either file. The `postbuild`
 // csp-verify guard fails the build if any inline script hash is missing here.
 /** @type {`sha256-${string}`[]} */
-const SCRIPT_HASHES = ["sha256-eNgORBbvXHs2m7X3L7pU6bT8pqN3Dsw4gTDVuGPT6f4=", "sha256-vCjPtM7wROwtuzNZfQnx90sgST6SziuhGtU7vyXTF0o="];
+const SCRIPT_HASHES = ["sha256-izcHVTIlQU4825y7IxluuYuEXuNjB+DhGdGIiN2hUhA=", "sha256-vCjPtM7wROwtuzNZfQnx90sgST6SziuhGtU7vyXTF0o="];
 
 // Per-post <lastmod> for the sitemap. The sitemap integration only sees URLs,
 // not collection data, so we read blog frontmatter here at build time and map
