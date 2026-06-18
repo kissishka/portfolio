@@ -12,10 +12,12 @@ interface Props {
 
 const { locale, langSwitcher = true } = Astro.props;
 
+// Lead with the visible "RK" so the accessible name contains the visible
+// label (WCAG 2.5.3 Label in Name — lets voice-control users say "RK").
 const homeLabel =
   locale === "uk"
-    ? "Роман Кочережченко — на головну"
-    : "Roman Kocherezhchenko — home";
+    ? "RK — Роман Кочережченко, на головну"
+    : "RK — Roman Kocherezhchenko, home";
 ---
 
 <header class="site-header">
