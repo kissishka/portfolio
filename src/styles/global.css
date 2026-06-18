@@ -928,17 +928,63 @@ footer.site-footer p {
 :root {
   --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
     "Liberation Mono", monospace;
+
+  /* Code syntax palette — dark default (GitHub-dark-inspired). The site chrome
+     stays monochrome; code is the one surface where color carries meaning
+     (keyword vs string vs comment), so it gets a real, vivid palette. These are
+     the only color tokens that don't follow the --fg/--accent ink system. */
+  --code-bg: #161b22;
+  --code-border: #30363d;
+  --code-fg: #c9d1d9;
+  --code-comment: #8b949e;
+  --code-keyword: #ff7b72;
+  --code-string: #a5d6ff;
+  --code-number: #79c0ff;
+  --code-function: #d2a8ff;
+  --code-class: #7ee787;
+  --code-variable: #ffa657;
+}
+
+/* Light code palette — mirrors the site's light-mode trigger logic (system
+   light unless dark is forced, or an explicit light choice). The two bodies are
+   identical by design — KEEP THEM IN SYNC, same as the main palette above. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --code-bg: #f6f8fa;
+    --code-border: #d0d7de;
+    --code-fg: #24292f;
+    --code-comment: #6e7781;
+    --code-keyword: #cf222e;
+    --code-string: #0a3069;
+    --code-number: #0550ae;
+    --code-function: #8250df;
+    --code-class: #116329;
+    --code-variable: #953800;
+  }
+}
+
+:root[data-theme="light"] {
+  --code-bg: #f6f8fa;
+  --code-border: #d0d7de;
+  --code-fg: #24292f;
+  --code-comment: #6e7781;
+  --code-keyword: #cf222e;
+  --code-string: #0a3069;
+  --code-number: #0550ae;
+  --code-function: #8250df;
+  --code-class: #116329;
+  --code-variable: #953800;
 }
 
 /* inline code */
 .prose :not(pre) > code {
   font-family: var(--font-mono);
   font-size: 0.875em;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
   border-radius: 4px;
   padding: 0.1em 0.36em;
-  color: var(--fg);
+  color: var(--code-fg);
   overflow-wrap: anywhere;
 }
 
@@ -947,13 +993,14 @@ footer.site-footer p {
   font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.6;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
   border-radius: var(--radius);
   padding: 1rem 1.15rem;
   margin: 0;
   overflow-x: auto;
   tab-size: 2;
+  color: var(--code-fg);
 }
 
 .prose pre[class*="language-"] code {
@@ -962,23 +1009,23 @@ footer.site-footer p {
   background: none;
   border: 0;
   padding: 0;
-  color: var(--fg);
+  color: inherit;
   white-space: pre;
 }
 
-/* Prism token theme — monochrome with the site accent. Class-based (no inline
-   styles), so it stays inside the strict CSP, and it references theme tokens,
-   so it follows the light/dark palette automatically. */
+/* Prism token theme — full syntax palette (GitHub-style), theme-aware via the
+   --code-* tokens. Class-based (no inline styles), so it stays inside the strict
+   CSP, and it follows the light/dark code palette automatically. */
 .prose .token.comment,
 .prose .token.prolog,
 .prose .token.doctype,
 .prose .token.cdata {
-  color: var(--fg-3);
+  color: var(--code-comment);
   font-style: italic;
 }
 
 .prose .token.punctuation {
-  color: var(--fg-3);
+  color: var(--code-fg);
 }
 
 .prose .token.namespace {
@@ -987,38 +1034,45 @@ footer.site-footer p {
 
 .prose .token.property,
 .prose .token.attr-name,
-.prose .token.tag,
-.prose .token.symbol,
-.prose .token.deleted {
-  color: var(--fg-2);
-}
-
 .prose .token.boolean,
 .prose .token.number,
 .prose .token.constant,
-.prose .token.builtin,
-.prose .token.class-name {
-  color: var(--accent-2);
+.prose .token.symbol {
+  color: var(--code-number);
 }
 
+.prose .token.tag,
+.prose .token.class-name,
+.prose .token.builtin {
+  color: var(--code-class);
+}
+
+.prose .token.selector,
 .prose .token.string,
 .prose .token.char,
 .prose .token.attr-value,
 .prose .token.inserted,
 .prose .token.regex {
-  color: var(--accent);
+  color: var(--code-string);
 }
 
+.prose .token.atrule,
 .prose .token.keyword,
-.prose .token.selector,
-.prose .token.operator,
-.prose .token.function,
-.prose .token.important,
-.prose .token.atrule {
-  color: var(--fg);
+.prose .token.important {
+  color: var(--code-keyword);
+}
+
+.prose .token.function {
+  color: var(--code-function);
+}
+
+.prose .token.variable,
+.prose .token.deleted {
+  color: var(--code-variable);
 }
 
 .prose .token.operator {
+  color: var(--code-keyword);
   background: none;
 }
 
