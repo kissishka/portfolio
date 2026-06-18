@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import Hero from "../../components/Hero.astro";
+import RispIntro from "../../components/RispIntro.astro";
 import Contact from "../../components/Contact.astro";
 import { t } from "../../lib/t";
 import { TELEGRAM_HANDLE, EMAIL } from "../../lib/contact";
@@ -16,6 +17,7 @@ const description = t("meta.description", locale);
   <SiteHeader locale={locale} />
   <main>
     <Hero locale={locale} />
+    <RispIntro locale={locale} />
     <Contact locale={locale} telegramHandle={TELEGRAM_HANDLE} email={EMAIL} />
   </main>
   <SiteFooter locale={locale} />

@@ -1,0 +1,46 @@
+---
+import type { Locale } from "../lib/t";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// A definitional, self-contained "What is risp?" answer block: lifts the
+// homepage out of ~zero citability (risp otherwise appears only in meta/schema)
+// and carries the ownable framing — zero-dependency, three engines, Cranelift
+// JIT, beats CPython 3.14 — that disambiguates this risp from the better-known
+// 2019 "Risp (in (Rust) (Lisp))".
+const copy: Record<
+  Locale,
+  { heading: string; answer: string; ctaLabel: string; ctaHref: string }
+> = {
+  en: {
+    heading: "What is risp?",
+    answer:
+      "risp is a small, zero-dependency Lisp interpreter written in Rust. It runs the same program three ways — a tree-walking evaluator, a bytecode VM that beats CPython 3.14 on loops and arithmetic, and an optional Cranelift JIT that runs 10–23× faster than CPython — all sharing one evaluator, environment, and standard library. I built it by pairing with Claude Code, kept honest by a reference interpreter and differential tests.",
+    ctaLabel: "Read how risp is built →",
+    ctaHref: "/en/blog/building-a-lisp-in-rust-with-claude-code/",
+  },
+  uk: {
+    heading: "Що таке risp?",
+    answer:
+      "risp — невеликий інтерпретатор Lisp без залежностей, написаний на Rust. Він виконує одну й ту саму програму трьома способами — деревний обхідник, байткодова віртуальна машина, що випереджає CPython 3.14 на циклах та арифметиці, і опційний Cranelift JIT, який працює у 10–23 рази швидше за CPython, — і всі вони поділяють один обчислювач, середовище та стандартну бібліотеку. Я створив його в парі з Claude Code, тримаючи код чесним за допомогою еталонного інтерпретатора та диференційних тестів.",
+    ctaLabel: "Як зроблено risp →",
+    ctaHref: "/uk/blog/building-a-lisp-in-rust-with-claude-code/",
+  },
+};
+
+const c = copy[locale];
+---
+
+<section class="intro" aria-labelledby="risp-heading">
+  <div class="section-head">
+    <h2 id="risp-heading">{c.heading}</h2>
+    <p class="section-intro">{c.answer}</p>
+  </div>
+  <div class="cta-row">
+    <a class="btn btn--secondary" href={c.ctaHref}>{c.ctaLabel}</a>
+  </div>
+</section>
