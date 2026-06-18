@@ -16,6 +16,13 @@ The site is bilingual (English and Ukrainian); the English pages below are canon
 - [Lexical scope in a Rust Lisp: environments, closures, and a two-path drop](https://roman-kocherezhchenko.com/en/blog/lexical-scope-in-a-rust-lisp/): The scope model — an `Rc<RefCell<Environment>>` chain, iterative lookup and `set!`, closures that capture frames by reference (`child(&c.env)`), and a fast/slow `Drop` that frees a million-deep scope chain without recursing or allocating on the hot path.
 - [Why risp's standard library is written in risp, not Rust](https://roman-kocherezhchenko.com/en/blog/risp-standard-library-in-lisp-not-rust/): The native/Lisp boundary — a flat table of std-only builtins, an int-preserving numeric tower, and why `map`/`filter`/`fold` live in a risp prelude: a native higher-order builtin would re-enter the evaluator on the host stack and could overflow.
 
+## Writing on GEO & SEO — optimizing this site for AI search
+
+- [Structured data that makes a blog AI-quotable](https://roman-kocherezhchenko.com/en/blog/structured-data-that-makes-a-blog-ai-quotable/): The JSON-LD this site serves — a shared Person + WebSite graph with sameAs anchors, and a per-post BlogPosting carrying FAQPage, speakable, and isBasedOn.
+- [Writing so an AI will cite you](https://roman-kocherezhchenko.com/en/blog/writing-so-an-ai-will-cite-you/): The mechanical properties of a citable passage — an answer-first lede, a named subject in every sentence, an attached number, and each claim tied to inspectable source.
+- [llms.txt, robots, and the HTML that AI crawlers actually read](https://roman-kocherezhchenko.com/en/blog/llms-txt-and-html-ai-crawlers-read/): Serving the whole page in one fetch — near-zero client JS, an open robots.txt, correct hreflang, per-post sitemap lastmod, and this llms.txt.
+- [The on-page ceiling: GEO is mostly off your site](https://roman-kocherezhchenko.com/en/blog/the-on-page-ceiling-geo-is-mostly-off-your-site/): Why a 93 technical and 86 structured-data score still nets 59 overall — an entity name collision, thin off-site authority, and the work that isn't code.
+
 ## About
 
 - [Home](https://roman-kocherezhchenko.com/en/): Who I am and how to get in touch.
