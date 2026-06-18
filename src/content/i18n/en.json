@@ -1,6 +1,7 @@
 {
   "hero.kicker": "Roman Kocherezhchenko",
-  "hero.headline": "AI-Enabled Engineer",
+  "hero.headline": "I write systems code with AI, then prove it's honest.",
+  "hero.lede": "Most of my time goes into risp — a zero-dependency Lisp interpreter in Rust, written with AI agents and verified against itself.",
   "meta.description": "Roman Kocherezhchenko — AI-Enabled engineer shipping fast static sites, Telegram bots, and edge deploys, and writing deep notes on systems work like risp, a zero-dependency three-engine Lisp in Rust that beats CPython 3.14.",
   "contact.heading": "Get in touch",
   "contact.body": "Telegram is the fastest way to reach me — email works too.",

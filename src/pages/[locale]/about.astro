@@ -18,16 +18,16 @@ const locale = localeParam;
 // home/contact copy) — no claims the rest of the site can't back up.
 const bio: Record<typeof locale, string[]> = {
   en: [
-    "Roman Kocherezhchenko is an AI-Enabled Engineer — he designs, builds, and ships software by pairing with coding agents, then writes about the systems work underneath.",
-    "His current focus is risp, a small, zero-dependency Lisp interpreter written in Rust: a tree-walking evaluator, a bytecode VM that beats CPython 3.14 on arithmetic and loops, and an optional Cranelift JIT that runs 10–23× faster than CPython. An eight-part series documents the work — from the reader and a no-stack-overflow CEK evaluator to macros, quasiquote, and a self-hosted standard library.",
-    "The throughline is a discipline for keeping AI-written systems code honest: a reference interpreter as an oracle, differential testing that asserts byte-identical results, and a no-panic error contract. He holds the invariants, the agent supplies the throughput, and the tests arbitrate.",
-    "Beyond interpreters, he builds fast static sites, Telegram bots that do real work, and edge deploys on Cloudflare.",
+    "I'm Roman Kocherezhchenko, an AI-Enabled Engineer. That means I design, build, and ship software by pairing with AI coding agents — then write about the systems work underneath, so the throughput never gets to skip the hard part.",
+    "Most of my time goes into risp, a small, zero-dependency Lisp interpreter in Rust. It started as a tree-walking evaluator, grew a bytecode VM that beats CPython 3.14 on arithmetic and loops, and now has an optional Cranelift JIT that runs 10–23× faster than CPython. I wrote it up in an eight-part series — from the reader and evaluator to macros, quasiquote, and a self-hosted standard library. Not the highlight reel, the actual build.",
+    "The throughline is a discipline for keeping AI-written systems code honest: a reference interpreter as an oracle, differential testing until the results are byte-identical, and a no-panic error contract so failure is a value, not a crash. I hold the invariants, the agent supplies the throughput, and the tests arbitrate.",
+    "When I'm not in the interpreter, I build fast static sites, Telegram bots that do real work, and edge deploys on Cloudflare. I work in English and Ukrainian. If you're building at the seam between AI agents and code that has to be correct, I'd like to hear about it.",
   ],
   uk: [
-    "Роман Кочережченко — інженер, що працює з AI: він проєктує, будує та запускає програмне забезпечення в парі з кодувальними агентами, а потім пише про системну роботу, що стоїть за цим.",
-    "Зараз у фокусі — risp, невеликий інтерпретатор Lisp без залежностей, написаний на Rust: деревний обхідник, байткодова віртуальна машина, що випереджає CPython 3.14 на арифметиці й циклах, та опційний Cranelift JIT, який працює у 10–23 рази швидше за CPython. Робота описана в серії з восьми частин — від читача та CEK-обчислювача без переповнення стека до макросів, квазіцитування та власної стандартної бібліотеки.",
-    "Наскрізна ідея — дисципліна, що тримає згенерований AI системний код чесним: еталонний інтерпретатор як оракул, диференційне тестування з перевіркою на побайтову ідентичність і контракт помилок без паніки. Він тримає інваріанти, агент дає пропускну здатність, а тести виносять вердикт.",
-    "Окрім інтерпретаторів, він робить швидкі статичні сайти, Telegram-боти, що виконують реальну роботу, та edge-деплої на Cloudflare.",
+    "Я Роман Кочережченко, інженер, що працює з AI. Це означає, що я проєктую, будую та запускаю програмне забезпечення в парі з кодувальними агентами — а потім пишу про системну роботу, що стоїть за цим, щоб пропускна здатність ніколи не оминала найскладнішого.",
+    "Більшість часу йде на risp — невеликий інтерпретатор Lisp без залежностей, написаний на Rust. Він почався як деревний обхідник, отримав байткодову віртуальну машину, що випереджає CPython 3.14 на арифметиці й циклах, а тепер має й опційний Cranelift JIT, який працює у 10–23 рази швидше за CPython. Я описав усе це в серії з восьми частин — від читача та обчислювача до макросів, квазіцитування та власної стандартної бібліотеки. Не парадна версія, а справжній процес.",
+    "Наскрізна ідея — дисципліна, що тримає згенерований AI системний код чесним: еталонний інтерпретатор як оракул, диференційне тестування, доки результати не стануть побайтово ідентичними, і контракт помилок без паніки, щоб збій був значенням, а не крахом. Я тримаю інваріанти, агент дає пропускну здатність, а тести виносять вердикт.",
+    "Коли я не в інтерпретаторі, я роблю швидкі статичні сайти, Telegram-боти, що виконують реальну роботу, та edge-деплої на Cloudflare. Я працюю англійською та українською. Якщо ви будуєте на стику AI-агентів і коду, який мусить бути правильним, — напишіть мені.",
   ],
 };
 ---
