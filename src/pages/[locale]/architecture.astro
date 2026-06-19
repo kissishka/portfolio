@@ -1,0 +1,959 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import RispArchDiagram from "../../components/RispArchDiagram.astro";
+import { isLocale } from "../../lib/t";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "uk" } }];
+}
+
+const { locale: localeParam } = Astro.params;
+if (!isLocale(localeParam)) throw new Error(`Unknown locale: ${localeParam}`);
+const locale = localeParam;
+
+const REPO = "https://github.com/kissishka/risp";
+
+// Page-body prose lives inline so the shared dictionary stays lean. Code blocks
+// are language-neutral and live in the markup; only descriptive text is keyed.
+const c = {
+  en: {
+    title: "risp Architecture — Roman Kocherezhchenko",
+    desc:
+      "How risp is built: a homoiconic Value enum, an iterative no-panic core, and three execution engines (tree-walker, bytecode VM, Cranelift JIT) sharing one evaluator, environment, and standard library.",
+    kicker: "Anatomy of a Lisp",
+    h1: "risp Architecture",
+    lede:
+      "A zero-dependency Lisp interpreter in Rust — one homoiconic value, one iterative core, three execution engines. Here is how the pieces fit.",
+    viewSource: "View source",
+    readStory: "Read the story",
+
+    a1Label: "the core idea",
+    a1Title: "Code is data",
+    a1Lede:
+      "One Value enum is both the parsed AST and the runtime value. Four consequences follow — each its own idea.",
+    b1: ["One type, two jobs", "The parsed syntax tree and the runtime value are the same enum. No node type sits between source and execution."],
+    b2: ["Lists are values", "A list is just nested pairs. cons builds one; car and cdr take it apart. Program structure and data structure are the same structure."],
+    b3: ["Macros for free", "Because code is data, a macro is just a function from forms to forms. Quasiquote builds the new form and the evaluator runs it."],
+    b4: ["Cheap to pass around", "Every heap payload sits behind an Rc, so passing a Value clones a pointer, not a tree."],
+
+    a2Label: "how it fits together",
+    a2Title: "The dependency flow",
+    a2Lede:
+      "Follow the wires. Source becomes one homoiconic value, and that Value hub is what everything else reads from. Hover any node to light up its internals.",
+    a2Trace: [
+      ["Read", "Text → tokens → one Value tree, on an explicit stack that never overflows."],
+      ["Branch", "The Value hub feeds the macro expander, the environment, and the evaluator."],
+      ["Dispatch", "The evaluator hands each form to a tree-walker, a bytecode VM, or a JIT."],
+      ["Share", "All three see the same errors, the same builtins, the same prelude."],
+    ] as [string, string][],
+
+    a3Label: "inside the core",
+    a3Title: "Inside the core",
+    a3Lede:
+      "Three components do the real work between source and result. Each runs on an explicit stack, so user-controlled depth never reaches the host call stack.",
+    cr1: ["The reader", "Text becomes tokens, then one explicit-stack loop folds them into a Value tree. A million-deep nest parses without recursive descent."],
+    cr2: ["The environment", "Scopes are a chain of Rc<RefCell> frames. Lookup walks parents in a loop; a closure captures its defining frame — lexical, not dynamic."],
+    cr3: ["The evaluator", "An explicit-stack CEK machine. The Rust call stack stays three frames deep; nesting lives on a heap Vec<Frame>, so tail calls loop in constant space."],
+
+    a4Label: "three ways to run",
+    a4Title: "Three engines, one core",
+    a4Lede:
+      "The tree-walker, the bytecode VM, and the JIT are interchangeable front-ends over a single evaluator, a single environment model, and a single standard library. Swap the engine; the language does not change.",
+    engines: [
+      ["Tree-walker", "reference", "The reference interpreter and the oracle for differential testing — every other engine is checked byte-for-byte against it."],
+      ["Bytecode VM", "default fast path", "Compiles to a compact instruction set and runs a tight dispatch loop. Beats CPython 3.14 on loops and arithmetic."],
+      ["Cranelift JIT", "--features jit", "Optional, behind a feature flag. Emits native code through Cranelift and runs 10–23× faster than CPython."],
+    ] as [string, string, string][],
+
+    a5Label: "measured",
+    a5Title: "Fast — and provably the same",
+    a5Lede:
+      "Every program runs on all three engines, and the results must match the tree-walker byte for byte. Speed never costs correctness.",
+    stats: [
+      ["1682 ms", "tree-walker · fib(30)"],
+      ["95 ms", "bytecode VM · beats CPython 3.14"],
+      ["6.3 ms", "Cranelift JIT · fib(30)"],
+      ["10–23×", "faster than CPython on loops & arithmetic"],
+      ["0", "runtime dependencies in the default build"],
+      ["0", "panics on user input — failure is a value"],
+    ] as [string, string][],
+
+    a6Label: "never crashes",
+    a6Title: "Built to not fall over",
+    a6Lede:
+      "User input controls recursion depth, so every part of the core runs on an explicit heap stack instead of the host call stack.",
+    a6Cards: [
+      ["Iterative core", "Evaluator, parser, printer, and Drop all run on explicit stacks. A million-deep nest returns an answer where CPython raises RecursionError."],
+      ["Environments", "Scopes are Rc<RefCell<Environment>> frames with closure capture, torn down iteratively so deep chains never blow the host stack."],
+      ["Differential oracle", "agree() reruns every test on the VM and the JIT and asserts byte-identical output against the tree-walker."],
+    ] as [string, string][],
+
+    a7Label: "the standard library",
+    a7Title: "A stdlib that recurses on its own stack",
+    a7Lede:
+      "A flat native table covers the primitives — checked arithmetic, cons / car / cdr, equality, predicates. Everything else is Lisp, embedded at compile time: fold is tail-recursive, and map and filter are defined in terms of fold, so their recursion lives on the evaluator's heap stack, never the host C stack.",
+    a7Cap: "map and filter are fold; fold is tail-recursive.",
+
+    diveHead: "Read the deep dives",
+    diveIntro: "The full eight-part build log, one stage at a time.",
+    dives: [
+      ["writing-a-lisp-reader-in-rust", "Writing the reader: text to a Value tree"],
+      ["lexical-scope-in-a-rust-lisp", "Lexical scope: environments, closures, two-path drop"],
+      ["no-stack-overflow-lisp-interpreter-rust", "No stack overflows: the iterative core"],
+      ["bytecode-vm-faster-than-cpython", "A bytecode VM that beats CPython 3.14"],
+      ["cranelift-jit-for-a-lisp-in-rust", "A Cranelift JIT, 10–23× faster than CPython"],
+      ["risp-standard-library-in-lisp-not-rust", "Why the stdlib is written in risp, not Rust"],
+      ["building-a-lisp-in-rust-with-claude-code", "Building it all with Claude Code"],
+    ] as [string, string][],
+  },
+  uk: {
+    title: "Архітектура risp — Роман Кочережченко",
+    desc:
+      "Як побудовано risp: гомоіконний enum Value, ітеративне ядро без паніки та три рушії виконання (деревний обхідник, байткодова ВМ, Cranelift JIT), що поділяють один обчислювач, середовище та стандартну бібліотеку.",
+    kicker: "Анатомія Lisp",
+    h1: "Архітектура risp",
+    lede:
+      "Інтерпретатор Lisp на Rust без залежностей — одне гомоіконне значення, одне ітеративне ядро, три рушії виконання. Ось як складаються частини.",
+    viewSource: "Переглянути код",
+    readStory: "Прочитати історію",
+
+    a1Label: "ключова ідея",
+    a1Title: "Код — це дані",
+    a1Lede:
+      "Один enum Value є водночас і розібраним AST, і значенням під час виконання. З цього випливають чотири наслідки — кожен окремою думкою.",
+    b1: ["Один тип, дві ролі", "Розібране синтаксичне дерево та значення під час виконання — це той самий enum. Між кодом і виконанням немає окремого типу вузла."],
+    b2: ["Списки — це значення", "Список — це лише вкладені пари. cons будує пару; car і cdr розбирають її. Структура програми та структура даних — одна й та сама структура."],
+    b3: ["Макроси задарма", "Оскільки код — це дані, макрос — це лише функція з форм у форми. Квазіцитування будує нову форму, а обчислювач її виконує."],
+    b4: ["Дешево передавати", "Кожен payload у купі живе за Rc, тож передача Value клонує вказівник, а не дерево."],
+
+    a2Label: "як це поєднано",
+    a2Title: "Потік залежностей",
+    a2Lede:
+      "Простежте дроти. Код стає одним гомоіконним значенням, і саме хаб Value — те, з чого читає все інше. Наведіть на вузол, щоб підсвітити його нутрощі.",
+    a2Trace: [
+      ["Читання", "Текст → токени → одне дерево Value, на явному стеку, що не переповнюється."],
+      ["Розгалуження", "Хаб Value живить макророзширювач, середовище та обчислювач."],
+      ["Диспетчеризація", "Обчислювач передає кожну форму деревному обхіднику, ВМ або JIT."],
+      ["Спільне", "Усі троє бачать ті самі помилки, ті самі builtins, той самий прелюд."],
+    ] as [string, string][],
+
+    a3Label: "усередині ядра",
+    a3Title: "Усередині ядра",
+    a3Lede:
+      "Три компоненти роблять реальну роботу між кодом і результатом. Кожен працює на явному стеку, тож керована користувачем глибина ніколи не сягає стеку викликів хоста.",
+    cr1: ["Читач", "Текст стає токенами, далі один цикл на явному стеку згортає їх у дерево Value. Мільйон рівнів вкладеності розбирається без рекурсивного спуску."],
+    cr2: ["Середовище", "Області видимості — це ланцюг кадрів Rc<RefCell>. Пошук обходить батьків у циклі; замикання захоплює кадр свого визначення — лексично, не динамічно."],
+    cr3: ["Обчислювач", "Машина CEK з явним стеком. Стек викликів Rust лишається три кадри завглибшки; вкладеність живе на купному Vec<Frame>, тож хвостові виклики крутяться у сталому просторі."],
+
+    a4Label: "три способи виконання",
+    a4Title: "Три рушії, одне ядро",
+    a4Lede:
+      "Деревний обхідник, байткодова ВМ та JIT — взаємозамінні фронтенди над єдиним обчислювачем, єдиною моделлю середовища та єдиною стандартною бібліотекою. Зміни рушій — мова не зміниться.",
+    engines: [
+      ["Деревний обхідник", "еталон", "Еталонний інтерпретатор і оракул для диференційного тестування — кожен інший рушій звіряється з ним побайтово."],
+      ["Байткодова ВМ", "швидкий шлях за замовч.", "Компілює у компактний набір інструкцій і виконує щільний цикл диспетчеризації. Випереджає CPython 3.14 на циклах і арифметиці."],
+      ["Cranelift JIT", "--features jit", "Опційний, за feature-прапорцем. Генерує машинний код через Cranelift і працює у 10–23× швидше за CPython."],
+    ] as [string, string, string][],
+
+    a5Label: "виміряно",
+    a5Title: "Швидко — і доказово однаково",
+    a5Lede:
+      "Кожна програма виконується на всіх трьох рушіях, і результати мусять збігатися з деревним обхідником побайтово. Швидкість ніколи не коштує правильності.",
+    stats: [
+      ["1682 ms", "деревний обхідник · fib(30)"],
+      ["95 ms", "байткодова ВМ · випереджає CPython 3.14"],
+      ["6.3 ms", "Cranelift JIT · fib(30)"],
+      ["10–23×", "швидше за CPython на циклах і арифметиці"],
+      ["0", "залежностей у збірці за замовчуванням"],
+      ["0", "панік на вводі користувача — збій є значенням"],
+    ] as [string, string][],
+
+    a6Label: "ніколи не падає",
+    a6Title: "Збудовано, щоб не впасти",
+    a6Lede:
+      "Глибину рекурсії задає ввід користувача, тож кожна частина ядра працює на явному купному стеку замість стеку викликів хоста.",
+    a6Cards: [
+      ["Ітеративне ядро", "Обчислювач, парсер, принтер і Drop працюють на явних стеках. Мільйон рівнів вкладеності повертає відповідь там, де CPython кидає RecursionError."],
+      ["Середовища", "Області видимості — це кадри Rc<RefCell<Environment>> із захопленням замикань, що звільняються ітеративно, тож глибокі ланцюги не зруйнують стек хоста."],
+      ["Диференційний оракул", "agree() переганяє кожен тест на ВМ і JIT та звіряє побайтовий вивід із деревним обхідником."],
+    ] as [string, string][],
+
+    a7Label: "стандартна бібліотека",
+    a7Title: "Бібліотека, що рекурсує на власному стеку",
+    a7Lede:
+      "Пласка нативна таблиця покриває примітиви — арифметику з перевіркою, cons / car / cdr, рівність, предикати. Усе інше — це Lisp, вбудований під час компіляції: fold хвостово-рекурсивний, а map і filter визначені через fold, тож їхня рекурсія живе на купному стеку обчислювача, а не на C-стеку хоста.",
+    a7Cap: "map і filter — це fold; fold хвостово-рекурсивний.",
+
+    diveHead: "Глибокі занурення",
+    diveIntro: "Повний журнал збірки з восьми частин, етап за етапом.",
+    dives: [
+      ["writing-a-lisp-reader-in-rust", "Пишемо читача: від тексту до дерева Value"],
+      ["lexical-scope-in-a-rust-lisp", "Лексична область: середовища, замикання, два шляхи drop"],
+      ["no-stack-overflow-lisp-interpreter-rust", "Без переповнень стеку: ітеративне ядро"],
+      ["bytecode-vm-faster-than-cpython", "Байткодова ВМ, що випереджає CPython 3.14"],
+      ["cranelift-jit-for-a-lisp-in-rust", "Cranelift JIT, у 10–23× швидший за CPython"],
+      ["risp-standard-library-in-lisp-not-rust", "Чому стандартна бібліотека написана на risp, а не на Rust"],
+      ["building-a-lisp-in-rust-with-claude-code", "Як усе це побудовано з Claude Code"],
+    ] as [string, string][],
+  },
+}[locale];
+
+---
+
+<BaseLayout
+  locale={locale}
+  title={c.title}
+  description={c.desc}
+  pathSuffix="architecture/"
+>
+  <SiteHeader locale={locale} />
+
+  <div class="arch-rail" aria-hidden="true"><span></span></div>
+
+  <main class="arch">
+    <!-- ===== HERO ===== -->
+    <header class="hero arch-hero">
+      <p class="kicker">{c.kicker}</p>
+      <h1>{c.h1}</h1>
+      <p class="lede">{c.lede}</p>
+      <div class="cta-row">
+        <a class="btn btn--primary" href={REPO} rel="noopener">{c.viewSource}</a>
+        <a class="btn btn--secondary" href={`/${locale}/about/`}>{c.readStory}</a>
+      </div>
+
+      <div
+        class="terminal"
+        role="img"
+        aria-label="An ASCII schematic of risp: source text flows through the reader into one Value enum, then the evaluator dispatches to three engines — a tree-walker, a bytecode VM, and a Cranelift JIT — over one shared core."
+      >
+        <div class="terminal__bar" aria-hidden="true">
+          <span class="terminal__dots"><i></i><i></i><i></i></span>
+          <span class="terminal__title">risp · architecture</span>
+        </div>
+        <pre class="terminal__body" aria-hidden="true"><code><span class="tm-p">  risp</span> <span class="tm-dim">· a lisp in rust · 3 engines · 0 dependencies</span>
+
+                       ┌─────────┐
+     text → reader →   │  Value  │   → eval → result
+                       └────┬────┘
+                            │   <span class="tm-cm">one enum · code is data</span>
+              ┌─────────────┼─────────────┐
+              ▼             ▼             ▼
+        <span class="tm-out">tree-walker</span>    <span class="tm-out">bytecode VM</span>    <span class="tm-out">Cranelift JIT</span>
+         <span class="tm-dim">reference</span>     <span class="tm-dim">95ms · fib30</span>   <span class="tm-dim">6.3ms · 10–23×</span>
+              └────────── one core ──────────┘
+            <span class="tm-dim">env · stdlib · RispError · no panics</span></code></pre>
+      </div>
+    </header>
+
+    <!-- ===== 01 · CODE IS DATA — four separate blocks ===== -->
+    <section id="idea" class="act">
+      <div class="act__head">
+        <p class="act__kicker">{c.a1Label}</p>
+        <h2 class="act__title">{c.a1Title}</h2>
+        <p class="act__lede">{c.a1Lede}</p>
+      </div>
+
+      <div class="blocks">
+        <article class="block">
+          <div class="block__text">
+            <span class="block__n">a</span>
+            <h3 class="block__t">{c.b1[0]}</h3>
+            <p class="block__b">{c.b1[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-k">pub enum</span> <span class="t-c2">Value</span> {"{"}
+  <span class="t-c2">Nil</span>,
+  <span class="t-c2">Bool</span>(<span class="t-cl">bool</span>),
+  <span class="t-c2">Int</span>(<span class="t-cl">i64</span>),
+  <span class="t-c2">Sym</span>(<span class="t-cl">Rc</span>&lt;<span class="t-cl">str</span>&gt;),
+  <span class="t-c2">Pair</span>(<span class="t-cl">Rc</span>&lt;<span class="t-cl">Cons</span>&gt;),
+  <span class="t-c2">Closure</span>(<span class="t-cl">Rc</span>&lt;<span class="t-cl">Closure</span>&gt;),
+  <span class="t-c2">Builtin</span>(<span class="t-cl">BuiltinFn</span>),
+{"}"}</code></pre>
+          </div>
+        </article>
+
+        <article class="block block--flip">
+          <div class="block__text">
+            <span class="block__n">b</span>
+            <h3 class="block__t">{c.b2[0]}</h3>
+            <p class="block__b">{c.b2[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-cm">;; a list is just nested pairs</span>
+<span class="t-p">(</span><span class="t-fn">cons</span> 1 <span class="t-p">(</span><span class="t-fn">cons</span> 2 <span class="t-p">(</span><span class="t-fn">cons</span> 3 <span class="t-s">'()</span><span class="t-p">)))</span>  <span class="t-cm">;; => (1 2 3)</span>
+
+<span class="t-cm">// …and a Pair is two slots:</span>
+<span class="t-k">struct</span> <span class="t-c2">Pair</span> {"{"} car: <span class="t-cl">Value</span>, cdr: <span class="t-cl">Value</span> {"}"}</code></pre>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block__text">
+            <span class="block__n">c</span>
+            <h3 class="block__t">{c.b3[0]}</h3>
+            <p class="block__b">{c.b3[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-cm">;; a macro maps forms to forms</span>
+<span class="t-p">(</span><span class="t-fn">defmacro</span> unless <span class="t-p">(</span>c body<span class="t-p">)</span>
+  <span class="t-s">`</span><span class="t-p">(</span><span class="t-k">if</span> <span class="t-s">,</span>c nil <span class="t-s">,</span>body<span class="t-p">))</span>
+
+<span class="t-cm">;; (unless done (step))</span>
+<span class="t-cm">;;   => (if done nil (step))</span></code></pre>
+          </div>
+        </article>
+
+        <article class="block block--flip">
+          <div class="block__text">
+            <span class="block__n">d</span>
+            <h3 class="block__t">{c.b4[0]}</h3>
+            <p class="block__b">{c.b4[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-c2">Pair</span>(<span class="t-cl">Rc</span>&lt;<span class="t-cl">Cons</span>&gt;)        <span class="t-cm">// payload behind an Rc</span>
+
+<span class="t-k">let</span> b = a.<span class="t-fn">clone</span>();    <span class="t-cm">// O(1): refcount++,</span>
+                      <span class="t-cm">// shares the same cons</span></code></pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== 02 · DEPENDENCY FLOW — framed diagram + trace ===== -->
+    <section id="flow" class="act act--wide">
+      <div class="act__head">
+        <p class="act__kicker">{c.a2Label}</p>
+        <h2 class="act__title">{c.a2Title}</h2>
+        <p class="act__lede">{c.a2Lede}</p>
+      </div>
+
+      <figure class="fig">
+        <figcaption class="fig__label">fig · text → Value → engines</figcaption>
+        <div class="fig__canvas">
+          <RispArchDiagram locale={locale} />
+        </div>
+      </figure>
+
+      <ol class="trace">
+        {
+          c.a2Trace.map(([t, b], i) => (
+            <li class="trace__step">
+              <span class="trace__n">{String(i + 1).padStart(2, "0")}</span>
+              <h3 class="trace__t">{t}</h3>
+              <p class="trace__b">{b}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- ===== 03 · INSIDE THE CORE — three separate blocks ===== -->
+    <section id="core" class="act">
+      <div class="act__head">
+        <p class="act__kicker">{c.a3Label}</p>
+        <h2 class="act__title">{c.a3Title}</h2>
+        <p class="act__lede">{c.a3Lede}</p>
+      </div>
+
+      <div class="blocks">
+        <article class="block">
+          <div class="block__text">
+            <span class="block__n">01</span>
+            <h3 class="block__t">{c.cr1[0]}</h3>
+            <p class="block__b">{c.cr1[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-k">struct</span> <span class="t-c2">Frame</span> {"{"}
+  items: <span class="t-cl">Vec</span>&lt;<span class="t-cl">Value</span>&gt;,       <span class="t-cm">// gathered so far</span>
+  wrappers: <span class="t-cl">Vec</span>&lt;<span class="t-cl">Rc</span>&lt;<span class="t-cl">str</span>&gt;&gt;,  <span class="t-cm">// pending 'quote</span>
+  tail: <span class="t-cl">Option</span>&lt;<span class="t-cl">Value</span>&gt;,     <span class="t-cm">// after a dot</span>
+{"}"}
+<span class="t-cm">// one loop — never recursive descent</span></code></pre>
+          </div>
+        </article>
+
+        <article class="block block--flip">
+          <div class="block__text">
+            <span class="block__n">02</span>
+            <h3 class="block__t">{c.cr2[0]}</h3>
+            <p class="block__b">{c.cr2[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-k">type</span> <span class="t-c2">Env</span> = <span class="t-cl">Rc</span>&lt;<span class="t-cl">RefCell</span>&lt;<span class="t-cl">Environment</span>&gt;&gt;;
+
+<span class="t-k">fn</span> <span class="t-fn">lookup</span>(env: &amp;<span class="t-cl">Env</span>, name: &amp;<span class="t-cl">str</span>) -&gt; <span class="t-cl">Option</span>&lt;<span class="t-cl">Value</span>&gt; {"{"}
+  <span class="t-k">let mut</span> cur = env.<span class="t-fn">clone</span>();
+  <span class="t-k">loop</span> {"{"}                  <span class="t-cm">// walk parents</span>
+    <span class="t-k">if let</span> <span class="t-c2">Some</span>(v) = cur.<span class="t-fn">borrow</span>().vars.<span class="t-fn">get</span>(name)
+      {"{"} <span class="t-k">return</span> <span class="t-c2">Some</span>(v.<span class="t-fn">clone</span>()); {"}"}
+    cur = cur.<span class="t-fn">borrow</span>().parent.<span class="t-fn">clone</span>()?;
+  {"}"}
+{"}"}</code></pre>
+          </div>
+        </article>
+
+        <article class="block">
+          <div class="block__text">
+            <span class="block__n">03</span>
+            <h3 class="block__t">{c.cr3[0]}</h3>
+            <p class="block__b">{c.cr3[1]}</p>
+          </div>
+          <div class="block__media">
+            <pre class="code-block"><code><span class="t-k">enum</span> <span class="t-c2">St</span> {"{"} <span class="t-c2">Eval</span>(<span class="t-cl">Value</span>, <span class="t-cl">Env</span>), <span class="t-c2">Ret</span>(<span class="t-cl">Value</span>) {"}"}
+
+<span class="t-k">fn</span> <span class="t-fn">run_loop</span>(<span class="t-k">mut</span> st: <span class="t-cl">St</span>, <span class="t-k">mut</span> stack: <span class="t-cl">Vec</span>&lt;<span class="t-cl">Frame</span>&gt;) {"{"}
+  <span class="t-k">loop</span> {"{"}
+    st = <span class="t-k">match</span> st {"{"}
+      <span class="t-c2">St</span>::<span class="t-c2">Eval</span>(e, env) =&gt; <span class="t-fn">step_eval</span>(e, env, stack)?,
+      <span class="t-c2">St</span>::<span class="t-c2">Ret</span>(v) =&gt; <span class="t-k">match</span> stack.<span class="t-fn">pop</span>() {"{"}
+        <span class="t-c2">None</span> =&gt; <span class="t-k">return</span> <span class="t-c2">Ok</span>(v),
+        <span class="t-c2">Some</span>(f) =&gt; <span class="t-fn">step_return</span>(f, v, stack)?,
+      {"}"},
+    {"}"};
+  {"}"}
+{"}"}</code></pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== 04 · THREE ENGINES ===== -->
+    <section id="engines" class="act">
+      <div class="act__head">
+        <p class="act__kicker">{c.a4Label}</p>
+        <h2 class="act__title">{c.a4Title}</h2>
+        <p class="act__lede">{c.a4Lede}</p>
+      </div>
+      <ul class="engine-grid stagger">
+        {
+          c.engines.map(([name, tag, body]) => (
+            <li class="engine">
+              <span class="engine__tag">{tag}</span>
+              <h3 class="engine__name">{name}</h3>
+              <p class="engine__body">{body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- ===== 05 · THE PROOF — numbers band ===== -->
+    <section id="proof" class="act act--proof">
+      <div class="act__head">
+        <p class="act__kicker">{c.a5Label}</p>
+        <h2 class="act__title">{c.a5Title}</h2>
+        <p class="act__lede">{c.a5Lede}</p>
+      </div>
+      <dl class="numbers stagger">
+        {
+          c.stats.map(([n, l]) => (
+            <div class="stat">
+              <dt class="stat__n">{n}</dt>
+              <dd class="stat__l">{l}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <!-- ===== 06 · ROBUSTNESS ===== -->
+    <section class="act">
+      <div class="act__head">
+        <p class="act__kicker">{c.a6Label}</p>
+        <h2 class="act__title">{c.a6Title}</h2>
+        <p class="act__lede">{c.a6Lede}</p>
+      </div>
+      <ul class="inv-grid stagger">
+        {
+          c.a6Cards.map(([t, b]) => (
+            <li class="inv">
+              <h3 class="inv__name">{t}</h3>
+              <p class="inv__body">{b}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- ===== 07 · STDLIB — quiet split ===== -->
+    <section id="stdlib" class="act act--split">
+      <div class="act__head act__head--col">
+        <p class="act__kicker">{c.a7Label}</p>
+        <h2 class="act__title">{c.a7Title}</h2>
+        <p class="act__lede">{c.a7Lede}</p>
+      </div>
+      <figure class="code-figure">
+        <pre class="code-block"><code><span class="t-p">(</span><span class="t-fn">def</span> fold
+  <span class="t-p">(</span><span class="t-k">lambda</span> <span class="t-p">(</span>f acc xs<span class="t-p">)</span>
+    <span class="t-p">(</span><span class="t-k">if</span> <span class="t-p">(</span><span class="t-fn">null?</span> xs<span class="t-p">)</span> acc
+        <span class="t-p">(</span><span class="t-fn">fold</span> f <span class="t-p">(</span>f acc <span class="t-p">(</span><span class="t-fn">car</span> xs<span class="t-p">))</span> <span class="t-p">(</span><span class="t-fn">cdr</span> xs<span class="t-p">)))))</span>
+
+<span class="t-p">(</span><span class="t-fn">def</span> map
+  <span class="t-p">(</span><span class="t-k">lambda</span> <span class="t-p">(</span>f xs<span class="t-p">)</span>
+    <span class="t-p">(</span><span class="t-fn">reverse</span> <span class="t-p">(</span><span class="t-fn">fold</span> <span class="t-p">(</span><span class="t-k">lambda</span> <span class="t-p">(</span>a x<span class="t-p">)</span> <span class="t-p">(</span><span class="t-fn">cons</span> <span class="t-p">(</span>f x<span class="t-p">)</span> a<span class="t-p">))</span> <span class="t-s">'()</span> xs<span class="t-p">))))</span></code></pre>
+        <figcaption class="code-figure__cap">{c.a7Cap}</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===== DEEP DIVES — quiet exit ===== -->
+    <section class="act act--exit">
+      <div class="related">
+        <p class="related__label">{c.diveHead}</p>
+        <p class="act__lede dive-intro">{c.diveIntro}</p>
+        <ul class="related__list">
+          {
+            c.dives.map(([slug, label]) => (
+              <li>
+                <a href={`/${locale}/blog/${slug}/`}>{label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="cta-row dive-cta">
+        <a class="btn btn--secondary" href={REPO} rel="noopener">{c.viewSource}</a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>
+
+<style>
+  /* ---------- scroll progress rail ---------- */
+  .arch-rail {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: max(0.6rem, calc((100vw - 64rem) / 2 - 1.4rem));
+    inline-size: 2px;
+    background: var(--border);
+    z-index: 5;
+    display: none;
+  }
+  .arch-rail > span {
+    position: absolute;
+    inset-block-start: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    transform: scaleY(0);
+    transform-origin: top;
+    background: var(--accent);
+  }
+  @media (min-width: 60rem) {
+    .arch-rail {
+      display: block;
+    }
+  }
+
+  .arch-hero h1 {
+    max-width: 18ch;
+  }
+
+  /* ---------- hero terminal ("app running" image block) ---------- */
+  .terminal {
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    border: 1px solid var(--code-border);
+    border-radius: calc(var(--radius) + 3px);
+    background: var(--code-bg);
+    overflow: hidden;
+    box-shadow:
+      0 1px 1px rgb(0 0 0 / 0.04),
+      0 18px 40px -24px rgb(0 0 0 / 0.45);
+  }
+  .terminal__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--code-border);
+    background: color-mix(in oklab, var(--code-bg) 86%, #000);
+  }
+  .terminal__dots {
+    display: inline-flex;
+    gap: 0.42rem;
+  }
+  .terminal__dots i {
+    inline-size: 0.7rem;
+    block-size: 0.7rem;
+    border-radius: 50%;
+    background: var(--border-2);
+  }
+  .terminal__title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+  }
+  .terminal__body {
+    margin: 0;
+    padding: clamp(0.95rem, 2.5vw, 1.5rem) clamp(1rem, 2.8vw, 1.6rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.74rem, 1.45vw, 0.9rem);
+    line-height: 1.75;
+    overflow-x: auto;
+    color: var(--code-fg);
+    tab-size: 2;
+  }
+  .tm-dim { color: var(--code-comment); }
+  .tm-p { color: var(--accent); }
+  .tm-out { color: var(--code-class); }
+  .tm-cm { color: var(--code-comment); font-style: italic; }
+
+  /* ---------- act skeleton + numbering ---------- */
+  .arch {
+    counter-reset: act;
+  }
+  .act {
+    padding-block: clamp(3.5rem, 9vh, 6.5rem);
+    counter-increment: act;
+  }
+  .act + .act {
+    border-top: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+  }
+  .act__head {
+    max-width: 54ch;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  }
+  .act__kicker {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1rem;
+  }
+  .act__kicker::before {
+    content: counter(act, decimal-leading-zero) " · ";
+    color: var(--fg-3);
+  }
+  .act__title {
+    font-size: clamp(1.7rem, 4.2vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 16ch;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .act__lede {
+    color: var(--fg-2);
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.55;
+    margin: 1.1rem 0 0;
+    max-width: 56ch;
+    text-wrap: pretty;
+  }
+
+  /* ---------- content blocks (separate, alternating code + text) ---------- */
+  .blocks {
+    display: grid;
+  }
+  .block {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    align-items: center;
+    padding-block: clamp(2.25rem, 5vh, 3.5rem);
+  }
+  .block:first-child {
+    padding-block-start: 0;
+  }
+  .block + .block {
+    border-top: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
+  }
+  /* flip: code on the left, text on the right */
+  .block--flip .block__media {
+    order: -1;
+  }
+  .block__n {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .block__t {
+    font-size: clamp(1.3rem, 2.6vw, 1.75rem);
+    line-height: 1.1;
+    color: var(--fg);
+    margin: 0 0 0.7rem;
+    font-weight: inherit;
+    text-wrap: balance;
+  }
+  .block__b {
+    margin: 0;
+    color: var(--fg-2);
+    line-height: 1.6;
+    max-width: 42ch;
+  }
+
+  /* ---------- 02 · framed diagram + trace ---------- */
+  .act--wide .act__head {
+    max-width: 60ch;
+  }
+  .fig {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-2);
+    overflow: hidden;
+  }
+  .fig__label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .fig__canvas {
+    padding: clamp(0.75rem, 2.5vw, 1.75rem);
+  }
+  .trace {
+    list-style: none;
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+  .trace__step {
+    position: relative;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--border-2);
+  }
+  .trace__n {
+    position: absolute;
+    top: -0.75rem;
+    background: var(--bg);
+    padding-inline-end: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+  }
+  .trace__t {
+    font-size: 1.05rem;
+    margin: 0 0 0.35rem;
+    color: var(--fg);
+    font-weight: inherit;
+  }
+  .trace__b {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--fg-2);
+    line-height: 1.5;
+  }
+
+  /* ---------- card grids ---------- */
+  .engine-grid,
+  .inv-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .engine,
+  .inv {
+    padding: clamp(1.1rem, 2.5vw, 1.6rem);
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .engine__tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .engine__name,
+  .inv__name {
+    font-size: 1.15rem;
+    color: var(--fg);
+    margin: 0 0 0.5rem;
+    font-weight: inherit;
+  }
+  .engine__body,
+  .inv__body {
+    margin: 0;
+    color: var(--fg-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* ---------- 05 · numbers band ---------- */
+  .act--proof {
+    background: radial-gradient(
+      120% 100% at 50% 0%,
+      color-mix(in oklab, var(--accent) 7%, transparent),
+      transparent 60%
+    );
+  }
+  .numbers {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .stat {
+    border-top: 1px solid var(--border-2);
+    padding-top: 1rem;
+  }
+  .stat__n {
+    font-family: var(--font-mono);
+    font-size: clamp(2.1rem, 5.5vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+  .stat__l {
+    margin: 0.7rem 0 0;
+    font-size: 0.85rem;
+    color: var(--fg-3);
+    line-height: 1.45;
+    max-width: 26ch;
+  }
+
+  /* ---------- 07 · split ---------- */
+  .act--split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .act__head--col {
+    margin-bottom: 0;
+  }
+
+  /* ---------- code panel ---------- */
+  .code-figure {
+    margin: 0;
+  }
+  .code-block {
+    font-family: var(--font-mono);
+    font-size: clamp(0.72rem, 1.35vw, 0.85rem);
+    line-height: 1.65;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin: 0;
+    overflow-x: auto;
+    tab-size: 2;
+    color: var(--code-fg);
+  }
+  .code-figure__cap {
+    margin: 0.7rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--fg-3);
+  }
+  .t-k { color: var(--code-keyword); }
+  .t-s { color: var(--code-string); }
+  .t-fn { color: var(--code-function); }
+  .t-cl { color: var(--code-class); }
+  .t-cm { color: var(--code-comment); font-style: italic; }
+  .t-c2 { color: var(--code-variable); }
+  .t-p { color: var(--code-fg); }
+
+  /* ---------- exit ---------- */
+  .dive-intro {
+    margin-bottom: 1rem;
+  }
+  .dive-cta {
+    margin-top: 2rem;
+  }
+
+  /* ---------- responsive ---------- */
+  /* Card grids drop to two-up first, then one. */
+  @media (max-width: 52rem) {
+    .trace,
+    .numbers,
+    .engine-grid,
+    .inv-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .act--split {
+      grid-template-columns: 1fr;
+    }
+    .act__head--col {
+      margin-bottom: clamp(1.5rem, 5vw, 2rem);
+    }
+  }
+  @media (max-width: 34rem) {
+    .trace,
+    .numbers,
+    .engine-grid,
+    .inv-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* Blocks keep their two columns far longer — they only look right side by
+     side. Stack to one column (text, then code) only on phone widths. */
+  @media (max-width: 38rem) {
+    .block {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding-block: clamp(1.75rem, 7vw, 2.5rem);
+    }
+    .block--flip .block__media {
+      order: 0; /* keep text first when stacked */
+    }
+    .block__b {
+      max-width: none;
+    }
+  }
+
+  /* ---------- motion (never gates visibility) ---------- */
+  /* Opt OUT of the site's global opacity-based section reveal: on a long page a
+     blank section (if a scroll timeline fails to advance) is worse than no
+     animation. Content is always visible; motion only nudges it. */
+  main > section.act {
+    opacity: 1;
+    animation: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .arch-rail > span {
+        animation: arch-rail-fill linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+    @supports (animation-timeline: view()) {
+      .stagger > * {
+        animation: rise-in linear both;
+        animation-timeline: view();
+        animation-range: entry 2% entry 50%;
+      }
+    }
+    .engine,
+    .inv {
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+    .engine:hover,
+    .inv:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-2);
+    }
+  }
+  @keyframes arch-rail-fill {
+    to {
+      transform: scaleY(1);
+    }
+  }
+  /* transform-only: a stalled timeline leaves an element 12px low, never hidden */
+  @keyframes rise-in {
+    from {
+      transform: translateY(12px);
+    }
+    to {
+      transform: none;
+    }
+  }
+</style>
